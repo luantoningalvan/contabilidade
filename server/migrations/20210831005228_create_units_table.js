@@ -5,8 +5,7 @@ exports.up = function (knex) {
     table.boolean("sold");
     table.integer("purchase_price").notNullable();
     table.integer("sale_price");
-    table.integer("profit");
-    table.timestamp("sale_date").defaultTo(knex.fn.now());
+    table.timestamp("sale_date");
     table.integer("client_id").notNullable().references("clients.id");
     table.integer("category_id").notNullable().references("categories.id");
   });

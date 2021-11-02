@@ -5,14 +5,20 @@ class UnitsController {
   async index(req, res, next) {
     try {
       const fetchUnits = await conn
-        .select("*")
+        .select(["products.*", "units.*", "clients.name as client_name"])
         .from("units")
-        .innerJoin("products", "products.code", "units.product_id");
+        .orderBy("sale_date")
+        .innerJoin("products", "products.code", "units.product_id")
+        .leftJoin("clients", "clients.id", "units.client_id");
 
       res.json(
         fetchUnits.map((unit) => ({
           ...unit,
           purchase_price: formatMoney(unit.purchase_price),
+          sale_price: unit.sold ? formatMoney(unit.sale_price) : null,
+          profit: unit.sold
+            ? formatMoney(unit.sale_price - unit.purchase_price)
+            : null,
         }))
       );
     } catch (error) {

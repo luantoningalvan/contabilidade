@@ -1,15 +1,6 @@
 import * as React from "react";
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
-  FormControl,
-  Select,
-  InputLabel,
-  MenuItem,
   Autocomplete,
   TextField,
   FormControlLabel,
@@ -17,7 +8,6 @@ import {
 } from "@mui/material";
 import { Modal } from "../../components/Modal";
 import { api } from "../../services/api";
-
 interface NewUnitProps {
   open: boolean;
   onClose: () => void;

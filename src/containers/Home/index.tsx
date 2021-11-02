@@ -11,6 +11,8 @@ import { Filters } from "./Filters";
 import { Table } from "../../components/Table";
 import { NewUnit } from "../../shared/NewUnit";
 import { useCategories } from "../../contexts/CategoriesContext";
+import { FiDollarSign, FiEdit, FiTrash } from "react-icons/fi";
+import { SellUnit } from "../../shared/SellUnit";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -19,6 +21,10 @@ export function Home() {
     null
   );
   const { fetchCategories, categories } = useCategories();
+  const [action, setAction] = React.useState<null | {
+    type: "sell" | "edit" | "delete";
+    unit: Unit;
+  }>(null);
 
   function handleChange(_, id: number) {
     setCurrentCategory(categories.find((cat) => cat.id === id) as Category);
@@ -34,6 +40,12 @@ export function Home() {
     fetchUnits();
   }, []);
 
+  React.useEffect(() => {
+    if (!currentCategory) {
+      setCurrentCategory(categories[0]);
+    }
+  }, [categories, currentCategory]);
+
   return (
     <>
       {newUnit && (
@@ -45,8 +57,17 @@ export function Home() {
         />
       )}
 
+      {action !== null && action.type === "sell" && (
+        <SellUnit
+          onClose={() => setAction(null)}
+          open={!!action}
+          unit={action.unit}
+          afterSubmit={fetchUnits}
+        />
+      )}
+
       <Fab
-        aria-label="add"
+        aria-label="Incluir unidade"
         style={{
           position: "fixed",
           bottom: 24,
@@ -92,6 +113,23 @@ export function Home() {
             },
             { label: "Lucro", name: "profit", align: "right", width: 130 },
             { label: "Cliente", name: "client_name", align: "right" },
+          ]}
+          contextActions={(unit: Unit) => [
+            {
+              label: "Vender",
+              icon: <FiDollarSign />,
+              onClick: () => setAction({ type: "sell", unit }),
+            },
+            {
+              label: "Editar",
+              icon: <FiEdit />,
+              onClick: () => setAction({ type: "edit", unit }),
+            },
+            {
+              label: "Excluir",
+              icon: <FiTrash />,
+              onClick: () => setAction({ type: "delete", unit }),
+            },
           ]}
           data={units}
         />
