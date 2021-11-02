@@ -10,14 +10,15 @@ import { Categories } from "./Categories";
 import { Filters } from "./Filters";
 import { Table } from "../../components/Table";
 import { NewUnit } from "../../shared/NewUnit";
+import { useCategories } from "../../contexts/CategoriesContext";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
   const [units, setUnits] = React.useState<Unit[]>([]);
-  const [categories, setCategories] = React.useState<Category[]>([]);
   const [currentCategory, setCurrentCategory] = React.useState<Category | null>(
     null
   );
+  const { fetchCategories, categories } = useCategories();
 
   function handleChange(_, id: number) {
     setCurrentCategory(categories.find((cat) => cat.id === id) as Category);
@@ -29,10 +30,7 @@ export function Home() {
   }
 
   React.useEffect(() => {
-    api.get("/categories").then((res) => {
-      setCategories(res.data);
-      setCurrentCategory(res.data[0]);
-    });
+    fetchCategories();
     fetchUnits();
   }, []);
 
@@ -61,17 +59,16 @@ export function Home() {
         <FiPlus size={32} />
       </Fab>
 
-      <div style={{ height: "100vh" }}>
-        <Header color={currentCategory?.color} />
+      <Header color={currentCategory?.color} />
 
-        <Categories
-          handleChange={handleChange}
-          currentCategory={currentCategory}
-          categories={categories}
-        />
+      <Categories
+        handleChange={handleChange}
+        currentCategory={currentCategory}
+      />
 
-        <Filters />
+      <Filters />
 
+      <div style={{ height: "calc(100vh - 154px)", overflow: "auto" }}>
         <Table
           columns={[
             { label: "Nome", name: "name" },

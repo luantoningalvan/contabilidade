@@ -13,7 +13,7 @@ interface ModalProps extends DialogProps {
   title: string;
   onClose: () => void;
   children: React.ReactElement;
-  footer: {
+  footer?: {
     primary: {
       text: string;
       onClick: () => void;
@@ -41,24 +41,26 @@ export function Modal(props: ModalProps) {
 
         <ModalContent>{children}</ModalContent>
 
-        <ModalFooter>
-          {footer.aditionalAction && (
-            <div style={{ flex: 1 }}>{footer.aditionalAction}</div>
-          )}
-          {footer.secondary && (
-            <Button size="large" onClick={footer.secondary.onClick}>
-              {footer.secondary.text}
+        {footer && (
+          <ModalFooter>
+            {footer.aditionalAction && (
+              <div style={{ flex: 1 }}>{footer.aditionalAction}</div>
+            )}
+            {footer.secondary && (
+              <Button size="large" onClick={footer.secondary.onClick}>
+                {footer.secondary.text}
+              </Button>
+            )}
+            <Button
+              size="large"
+              disableElevation
+              onClick={footer.primary.onClick}
+              variant="contained"
+            >
+              {footer.primary.text}
             </Button>
-          )}
-          <Button
-            size="large"
-            disableElevation
-            onClick={footer.primary.onClick}
-            variant="contained"
-          >
-            {footer.primary.text}
-          </Button>
-        </ModalFooter>
+          </ModalFooter>
+        )}
       </div>
     </Dialog>
   );

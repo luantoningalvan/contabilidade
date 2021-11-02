@@ -12,24 +12,32 @@ export const HeaderContainer = styled.header<HeaderContainerProps>`
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  height: 4rem;
+  height: 3rem;
 
-  h1 a {
-    color: white;
-    font-size: 1.4rem;
-    font-weight: 700;
-    text-decoration: none;
+  h1 {
+    font-size: 1.3rem;
+    line-height: 1.3rem;
+
+    a {
+      color: white;
+      font-weight: 700;
+      text-decoration: none;
+    }
   }
 
   nav {
     display: flex;
-    font-size: 1.1rem;
+    height: 3rem;
+    align-items: center;
+    gap: 0.5rem;
 
     a {
       display: block;
+      font-size: 1.1rem;
       text-decoration: none;
       color: white;
-      padding: 1rem;
+      border-radius: 4px;
+      padding: 0.5rem;
 
       &:hover {
         background-color: rgba(0, 0, 0, 0.1);

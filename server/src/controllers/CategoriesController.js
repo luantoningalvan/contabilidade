@@ -56,21 +56,21 @@ class CategoriesController {
   }
 
   async create(req, res, next) {
-    // const data = req.body;
-    // const { id: artist_id } = req.user;
-    // try {
-    //   const createAlbum = await conn("albums").insert(
-    //     {
-    //       name: data.name,
-    //       artist_id,
-    //       status: "draft",
-    //     },
-    //     ["*"]
-    //   );
-    //   res.json(createAlbum[0]);
-    // } catch (error) {
-    //   next(error);
-    // }
+    const data = req.body;
+
+    try {
+      const createCategory = await conn("categories").insert(
+        {
+          name: data.name,
+          color: data.color,
+        },
+        ["*"]
+      );
+
+      res.json(createCategory[0]);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async update(req, res, next) {
