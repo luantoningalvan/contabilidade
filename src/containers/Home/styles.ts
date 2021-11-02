@@ -23,4 +23,12 @@ export const CategoriesBar = styled.div<{ color?: string }>`
 export const FilterBar = styled.div`
   padding: 0.5rem 1.5rem;
   background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
 `;

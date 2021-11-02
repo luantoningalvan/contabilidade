@@ -1,35 +1,15 @@
 import * as React from "react";
 
-import { Header } from "../../components/Header";
-import { Table } from "../../components/Table";
-import {
-  Fab,
-  IconButton,
-  InputAdornment,
-  Tab,
-  Tabs,
-  TextField,
-} from "@mui/material";
-import { FiPlus, FiCheckCircle, FiSettings, FiSearch } from "react-icons/fi";
-import { NewUnit } from "../../shared/NewUnit";
+import { Fab } from "@mui/material";
+import { FiPlus, FiCheckCircle } from "react-icons/fi";
 import { api } from "../../services/api";
-import * as styled from "./styles";
+import { Category, Unit } from "./types";
 
-type Unit = {
-  id: number;
-  name: string;
-  purchase_price: number;
-  sale_price: number;
-  profit: number;
-  client_name: string;
-  sold: boolean;
-};
-
-type Category = {
-  id: number;
-  name: string;
-  color: string;
-};
+import { Header } from "../../components/Header";
+import { Categories } from "./Categories";
+import { Filters } from "./Filters";
+import { Table } from "../../components/Table";
+import { NewUnit } from "../../shared/NewUnit";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -83,32 +63,14 @@ export function Home() {
 
       <div style={{ height: "100vh" }}>
         <Header color={currentCategory?.color} />
-        <styled.CategoriesBar color={currentCategory?.color}>
-          <nav>
-            <Tabs value={currentCategory?.id} onChange={handleChange}>
-              {categories.map((cat) => (
-                <Tab value={cat.id} label={cat.name} key={cat.id} />
-              ))}
-            </Tabs>
-          </nav>
-          <IconButton>
-            <FiSettings />
-          </IconButton>
-        </styled.CategoriesBar>
-        <styled.FilterBar>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FiSearch />
-                </InputAdornment>
-              ),
-            }}
-            size="small"
-            variant="outlined"
-            placeholder="Buscar produto"
-          />
-        </styled.FilterBar>
+
+        <Categories
+          handleChange={handleChange}
+          currentCategory={currentCategory}
+          categories={categories}
+        />
+
+        <Filters />
 
         <Table
           columns={[
