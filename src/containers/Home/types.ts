@@ -13,3 +13,8 @@ export type Category = {
   name: string;
   color: string;
 };
+
+export type Filters = {
+  status?: number | null;
+  period?: string;
+};
