@@ -38,6 +38,15 @@ export function Home() {
     setUnits(results.data);
   }
 
+  async function handleDelete(id: number) {
+    const confirmExclusion = confirm("Relmente deseja excluir?");
+
+    if (confirmExclusion) {
+      await api.delete(`/units/${id}`);
+      fetchUnits();
+    }
+  }
+
   React.useEffect(() => {
     fetchCategories();
   }, []);
@@ -136,7 +145,7 @@ export function Home() {
             {
               label: "Excluir",
               icon: <FiTrash />,
-              onClick: () => setAction({ type: "delete", unit }),
+              onClick: () => handleDelete(unit.id),
             },
           ]}
           data={units}
