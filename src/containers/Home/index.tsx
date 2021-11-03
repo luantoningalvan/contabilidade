@@ -5,9 +5,8 @@ import { FiPlus, FiCheckCircle } from "react-icons/fi";
 import { api } from "../../services/api";
 import { Category, Unit } from "./types";
 
-import { Header } from "../../components/Header";
-import { Categories } from "./Categories";
-import { Filters } from "./Filters";
+import { Layout } from "../../components/Layout";
+import { TopBar } from "./TopBar";
 import { Table } from "../../components/Table";
 import { NewUnit } from "../../shared/NewUnit";
 import { useCategories } from "../../contexts/CategoriesContext";
@@ -28,8 +27,8 @@ export function Home() {
   }>(null);
   const [filters, setFilters] = React.useState({});
 
-  function handleChange(_, id: number) {
-    setCurrentCategory(categories.find((cat) => cat.id === id) as Category);
+  function handleChange(category) {
+    setCurrentCategory(category);
   }
 
   async function fetchUnits() {
@@ -83,74 +82,73 @@ export function Home() {
         />
       )}
 
-      <Fab
-        aria-label="Incluir unidade"
-        style={{
-          position: "fixed",
-          bottom: 24,
-          right: 24,
-          background: currentCategory?.color,
-          color: "#fff",
-        }}
-        onClick={() => setNewUnit(true)}
-      >
-        <FiPlus size={32} />
-      </Fab>
-
-      <Header color={currentCategory?.color} />
-
-      <Categories
-        handleChange={handleChange}
-        currentCategory={currentCategory}
-      />
-
-      <Filters filters={filters} setFilters={setFilters} />
-
-      <div style={{ height: "calc(100vh - 154px)", overflow: "auto" }}>
-        <Table
-          columns={[
-            { label: "Nome", name: "name" },
-            {
-              label: "Preço Compra",
-              name: "purchase_price",
-              align: "right",
-              width: 160,
-            },
-            {
-              label: "Vendido",
-              name: "sold",
-              align: "center",
-              format: (v) => v && <FiCheckCircle color="#03aa03" />,
-            },
-            {
-              label: "Preço Venda",
-              name: "sale_price",
-              align: "right",
-              width: 150,
-            },
-            { label: "Lucro", name: "profit", align: "right", width: 130 },
-            { label: "Cliente", name: "client_name", align: "right" },
-          ]}
-          contextActions={(unit: Unit) => [
-            {
-              label: "Vender",
-              icon: <FiDollarSign />,
-              onClick: () => setAction({ type: "sell", unit }),
-            },
-            {
-              label: "Editar",
-              icon: <FiEdit />,
-              onClick: () => setAction({ type: "edit", unit }),
-            },
-            {
-              label: "Excluir",
-              icon: <FiTrash />,
-              onClick: () => handleDelete(unit.id),
-            },
-          ]}
-          data={units}
+      <Layout>
+        <Fab
+          aria-label="Incluir unidade"
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            background: currentCategory?.color,
+            color: "#fff",
+          }}
+          onClick={() => setNewUnit(true)}
+        >
+          <FiPlus size={32} />
+        </Fab>
+        <TopBar
+          filters={filters}
+          setFilters={setFilters}
+          handleChange={handleChange}
+          currentCategory={currentCategory}
+          color={currentCategory?.color}
         />
-      </div>
+        <div style={{ height: "calc(100vh - 154px)", overflow: "auto" }}>
+          <Table
+            columns={[
+              { label: "Nome", name: "name" },
+              {
+                label: "Preço Compra",
+                name: "purchase_price",
+                align: "right",
+                width: 160,
+              },
+              {
+                label: "Vendido",
+                name: "sold",
+                align: "center",
+                format: (v) => v && <FiCheckCircle color="#03aa03" />,
+              },
+              {
+                label: "Preço Venda",
+                name: "sale_price",
+                align: "right",
+                width: 150,
+              },
+              { label: "Lucro", name: "profit", align: "right", width: 130 },
+              { label: "Cliente", name: "client_name", align: "right" },
+            ]}
+            contextActions={(unit: Unit) => [
+              {
+                label: "Vender",
+                icon: <FiDollarSign />,
+                onClick: () => setAction({ type: "sell", unit }),
+              },
+              {
+                label: "Editar",
+                icon: <FiEdit />,
+                onClick: () => setAction({ type: "edit", unit }),
+              },
+              {
+                label: "Excluir",
+                icon: <FiTrash />,
+                onClick: () => handleDelete(unit.id),
+              },
+            ]}
+            data={units}
+          />
+        </div>
+      </Layout>
     </>
   );
 }

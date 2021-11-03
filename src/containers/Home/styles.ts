@@ -20,9 +20,9 @@ export const CategoriesBar = styled.div<{ color?: string }>`
   }
 `;
 
-export const FilterBar = styled.div`
+export const FilterBar = styled.div<{ color: string }>`
   padding: 0.5rem 1.5rem;
-  background: #fafafa;
+  background: ${(props) => props.color};
   display: flex;
   justify-content: space-between;
 

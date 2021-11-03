@@ -1,9 +1,5 @@
-import { Header } from "../../components/Header";
+import { Layout } from "../../components/Layout";
 
-export function Results() {
-  return (
-    <div>
-      <Header />
-    </div>
-  );
+export function Records() {
+  return <Layout>Resultados</Layout>;
 }

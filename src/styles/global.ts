@@ -15,4 +15,8 @@ export const GlobalStyle = createGlobalStyle`
         font-size: 1rem;
         padding: 6px 24px;
     }
+
+    .MuiTableCell-head{
+        font-weight: bold;
+    }
 `;

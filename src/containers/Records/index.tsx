@@ -1,9 +1,5 @@
-import { Header } from "../../components/Header";
+import { Layout } from "../../components/Layout";
 
 export function Records() {
-  return (
-    <div>
-      <Header />
-    </div>
-  );
+  return <Layout>Cadastros</Layout>;
 }

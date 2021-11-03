@@ -2,23 +2,38 @@ import * as React from "react";
 
 import {
   Button,
+  Divider,
   FormControl,
   Grid,
   IconButton,
   InputAdornment,
   InputLabel,
+  ListItemIcon,
+  ListItemText,
+  Menu,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
-import { FiSearch, FiCalendar, FiX } from "react-icons/fi";
+import {
+  FiSearch,
+  FiCalendar,
+  FiX,
+  FiChevronDown,
+  FiSettings,
+} from "react-icons/fi";
 import * as styled from "./styles";
-import { Filters } from "./types";
+import { Category, Filters } from "./types";
 import { Modal } from "../../components/Modal";
+import { useCategories } from "../../contexts/CategoriesContext";
+import { ConfigureCategories } from "../../shared/ConfigureCategories";
 
 interface FilterProps {
   filters: Filters;
   setFilters: (filters: Filters) => void;
+  currentCategory: Category;
+  handleChange(e: any): void;
+  color: string;
 }
 
 const years = [2018, 2019, 2020, 2021, 2022];
@@ -110,12 +125,21 @@ export function PeriodModal(props: {
   );
 }
 
-export function Filters(props: FilterProps) {
+export function TopBar(props: FilterProps) {
   const { filters, setFilters } = props;
   const [periodModal, setPeriodModal] = React.useState(false);
+  const [configure, setConfigure] = React.useState(false);
+  const { categories } = useCategories();
+  const { currentCategory, handleChange } = props;
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   return (
     <>
+      <ConfigureCategories
+        open={configure}
+        onClose={() => setConfigure(false)}
+      />
+
       <PeriodModal
         open={periodModal}
         onClose={() => setPeriodModal(false)}
@@ -126,21 +150,60 @@ export function Filters(props: FilterProps) {
           })
         }
       />
-      <styled.FilterBar>
-        <TextField
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FiSearch />
-              </InputAdornment>
-            ),
-          }}
-          size="small"
+      <styled.FilterBar color={props.color}>
+        <Button
           variant="outlined"
-          placeholder="Buscar produto"
-        />
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          endIcon={<FiChevronDown />}
+        >
+          {currentCategory?.name}
+        </Button>
+
+        <Menu
+          open={!!anchorEl}
+          anchorEl={anchorEl}
+          onClose={() => setAnchorEl(null)}
+          onChange={handleChange}
+        >
+          {categories.map((cat) => (
+            <MenuItem
+              value={cat.id}
+              key={cat.id}
+              onClick={() => {
+                handleChange(cat);
+                setAnchorEl(null);
+              }}
+            >
+              {cat.name}
+            </MenuItem>
+          ))}
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              setConfigure(true);
+              setAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <FiSettings size={18} />
+            </ListItemIcon>
+            <ListItemText>Configurar categorias</ListItemText>
+          </MenuItem>
+        </Menu>
 
         <div>
+          <TextField
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FiSearch />
+                </InputAdornment>
+              ),
+            }}
+            size="small"
+            variant="outlined"
+            placeholder="Buscar produto"
+          />
           {filters.status === 1 && (
             <div>
               {filters.period && (
@@ -152,7 +215,6 @@ export function Filters(props: FilterProps) {
                 </IconButton>
               )}
               <Button
-                color="inherit"
                 endIcon={<FiCalendar />}
                 onClick={() => setPeriodModal(true)}
               >

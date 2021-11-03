@@ -1,20 +1,27 @@
 import styled from "styled-components";
 
-interface HeaderContainerProps {
+interface NavbarProps {
   color?: string;
 }
 
-export const HeaderContainer = styled.header<HeaderContainerProps>`
-  width: 100%;
-  background-color: ${(props) => props.color || "#000"};
-
+export const Navbar = styled.header<NavbarProps>`
+  width: 54px;
+  height: 100vh;
+  background-color: #333;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 1.5rem;
-  height: 3rem;
+  position: fixed;
+  top: 0;
+  left: 0;
 
-  h1 {
+  .logo {
+    width: 54px;
+    height: 54px;
+    background: rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.3rem;
     line-height: 1.3rem;
 
@@ -27,9 +34,11 @@ export const HeaderContainer = styled.header<HeaderContainerProps>`
 
   nav {
     display: flex;
+    flex-direction: column;
     height: 3rem;
     align-items: center;
     gap: 0.5rem;
+    margin-top: 1rem;
 
     a {
       display: block;
@@ -44,4 +53,8 @@ export const HeaderContainer = styled.header<HeaderContainerProps>`
       }
     }
   }
+`;
+
+export const Main = styled.main`
+  margin-left: 54px;
 `;
