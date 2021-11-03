@@ -26,6 +26,35 @@ export const FilterBar = styled.div<{ color: string }>`
   display: flex;
   justify-content: space-between;
 
+  .MuiButton-root {
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .MuiSelect-icon,
+  .MuiInputLabel-root,
+  .MuiInputAdornment-root {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .MuiOutlinedInput-root {
+    color: white;
+
+    input::placeholder {
+      color: white;
+      opacity: 0.7;
+    }
+
+    .MuiOutlinedInput-notchedOutline {
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    &:hover {
+      .MuiOutlinedInput-notchedOutline {
+        border: 1px solid rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+
   > div {
     display: flex;
     align-items: center;
