@@ -1,6 +1,7 @@
 import * as styled from "./styles";
 import Link from "next/link";
-import { FaCalculator, FaUsers, FaChartPie } from "react-icons/fa";
+import { FiUsers, FiBarChart, FiBox } from "react-icons/fi";
+import { FaCalculator } from "react-icons/fa";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,14 +19,19 @@ export const Layout = (props: LayoutProps) => {
           </Link>
         </div>
         <nav>
-          <Link href="/results">
+          <Link href="/">
             <a>
-              <FaChartPie size={20} />
+              <FiBox size={20} />
             </a>
           </Link>
-          <Link href="/users">
+          <Link href="/results">
             <a>
-              <FaUsers size={20} />
+              <FiBarChart size={20} />
+            </a>
+          </Link>
+          <Link href="/records">
+            <a>
+              <FiUsers size={20} />
             </a>
           </Link>
         </nav>

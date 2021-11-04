@@ -28,13 +28,17 @@ export const FilterBar = styled.div<{ color: string }>`
 
   .MuiButton-root {
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+  }
+
+  .MuiIconButton-root {
+    color: #fff;
   }
 
   .MuiSelect-icon,
   .MuiInputLabel-root,
   .MuiInputAdornment-root {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.8);
   }
 
   .MuiOutlinedInput-root {
@@ -46,11 +50,11 @@ export const FilterBar = styled.div<{ color: string }>`
     }
 
     .MuiOutlinedInput-notchedOutline {
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.7);
     }
     &:hover {
       .MuiOutlinedInput-notchedOutline {
-        border: 1px solid rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.8);
       }
     }
   }
@@ -59,5 +63,39 @@ export const FilterBar = styled.div<{ color: string }>`
     display: flex;
     align-items: center;
     gap: 16px;
+  }
+`;
+
+export const Totalizers = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 200px;
+  padding: 8px;
+
+  > div {
+    padding: 0.8rem;
+    border-radius: 0.25rem;
+    border: 1px solid #cacaca;
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    strong {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 1.8rem;
+      font-weight: 500;
+      line-height: 3rem;
+    }
+  }
+
+  .highlight-color {
+    background: #0288d1;
+    color: #fff;
+    border: none;
   }
 `;

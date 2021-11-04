@@ -28,16 +28,32 @@ class UnitsController {
         .innerJoin("products", "products.code", "units.product_id")
         .leftJoin("clients", "clients.id", "units.client_id");
 
-      res.json(
-        fetchUnits.map((unit) => ({
+      res.json({
+        data: fetchUnits.map((unit) => ({
           ...unit,
           purchase_price: formatMoney(unit.purchase_price),
           sale_price: unit.sold ? formatMoney(unit.sale_price) : null,
           profit: unit.sold
             ? formatMoney(unit.sale_price - unit.purchase_price)
             : null,
-        }))
-      );
+        })),
+        totalizers: fetchUnits.reduce(
+          (prev, curr) => {
+            return {
+              purchases: prev.purchases + curr.purchase_price,
+              sales: prev.sales + curr.sale_price,
+              profit: curr.sold
+                ? prev.profit + (curr.sale_price - curr.purchase_price)
+                : prev.profit,
+            };
+          },
+          {
+            purchases: 0,
+            sales: 0,
+            profit: 0,
+          }
+        ),
+      });
     } catch (error) {
       next(error);
     }

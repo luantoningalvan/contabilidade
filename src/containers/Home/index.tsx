@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { Fab } from "@mui/material";
-import { FiPlus, FiCheckCircle } from "react-icons/fi";
+import { Drawer, Fab } from "@mui/material";
+import { FiPlus, FiCheckCircle, FiArrowDown, FiArrowUp } from "react-icons/fi";
 import { api } from "../../services/api";
 import { Category, Unit } from "./types";
 
@@ -13,10 +13,14 @@ import { useCategories } from "../../contexts/CategoriesContext";
 import { FiDollarSign, FiEdit, FiTrash } from "react-icons/fi";
 import { SellUnit } from "../../shared/SellUnit";
 import { parseOptions } from "../../utils/parseOptions";
+import { Totalizers } from "./styles";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
-  const [units, setUnits] = React.useState<Unit[]>([]);
+  const [units, setUnits] = React.useState<{
+    data: Unit[];
+    totalizers: { purchases: number; sales: number; profit: number };
+  }>({ data: [], totalizers: { sales: 0, purchases: 0, profit: 0 } });
   const [currentCategory, setCurrentCategory] = React.useState<Category | null>(
     null
   );
@@ -26,6 +30,7 @@ export function Home() {
     unit: Unit;
   }>(null);
   const [filters, setFilters] = React.useState({});
+  const [totalizers, setTotalizers] = React.useState(false);
 
   function handleChange(category) {
     setCurrentCategory(category);
@@ -96,57 +101,113 @@ export function Home() {
         >
           <FiPlus size={32} />
         </Fab>
-        <TopBar
-          filters={filters}
-          setFilters={setFilters}
-          handleChange={handleChange}
-          currentCategory={currentCategory}
-          color={currentCategory?.color}
-        />
-        <div style={{ height: "calc(100vh - 154px)", overflow: "auto" }}>
-          <Table
-            columns={[
-              { label: "Nome", name: "name" },
-              {
-                label: "Preço Compra",
-                name: "purchase_price",
-                align: "right",
-                width: 160,
-              },
-              {
-                label: "Vendido",
-                name: "sold",
-                align: "center",
-                format: (v) => v && <FiCheckCircle color="#03aa03" />,
-              },
-              {
-                label: "Preço Venda",
-                name: "sale_price",
-                align: "right",
-                width: 150,
-              },
-              { label: "Lucro", name: "profit", align: "right", width: 130 },
-              { label: "Cliente", name: "client_name", align: "right" },
-            ]}
-            contextActions={(unit: Unit) => [
-              {
-                label: "Vender",
-                icon: <FiDollarSign />,
-                onClick: () => setAction({ type: "sell", unit }),
-              },
-              {
-                label: "Editar",
-                icon: <FiEdit />,
-                onClick: () => setAction({ type: "edit", unit }),
-              },
-              {
-                label: "Excluir",
-                icon: <FiTrash />,
-                onClick: () => handleDelete(unit.id),
-              },
-            ]}
-            data={units}
+
+        <Drawer
+          style={{ width: 200 }}
+          anchor="right"
+          variant="persistent"
+          open={totalizers}
+        >
+          <Totalizers>
+            <div>
+              <header>
+                <p>Compras</p>
+                <FiArrowDown size={20} />
+              </header>
+              <strong>
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(units.totalizers.purchases)}
+              </strong>
+            </div>
+            <div>
+              <header>
+                <p>Vendas</p>
+                <FiArrowUp size={20} />
+              </header>
+              <strong>
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(units.totalizers.sales)}
+              </strong>
+            </div>
+            <div className="highlight-color">
+              <header>
+                <p>Lucro</p>
+                <FiDollarSign size={20} />
+              </header>
+              <strong>
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(units.totalizers.profit)}
+              </strong>
+            </div>
+          </Totalizers>
+        </Drawer>
+
+        <div
+          style={{
+            transition: "width 0.2s",
+            width: totalizers ? "calc(100% - 200px)" : "100%",
+          }}
+        >
+          <TopBar
+            filters={filters}
+            setFilters={setFilters}
+            handleChange={handleChange}
+            currentCategory={currentCategory}
+            color={currentCategory?.color}
+            onToggleTotalizers={() => setTotalizers(!totalizers)}
           />
+
+          <div style={{ height: "calc(100vh - 154px)", overflow: "auto" }}>
+            <Table
+              columns={[
+                { label: "Nome", name: "name" },
+                {
+                  label: "Preço Compra",
+                  name: "purchase_price",
+                  align: "right",
+                  width: 160,
+                },
+                {
+                  label: "Vendido",
+                  name: "sold",
+                  align: "center",
+                  format: (v) => v && <FiCheckCircle color="#03aa03" />,
+                },
+                {
+                  label: "Preço Venda",
+                  name: "sale_price",
+                  align: "right",
+                  width: 150,
+                },
+                { label: "Lucro", name: "profit", align: "right", width: 130 },
+                { label: "Cliente", name: "client_name", align: "right" },
+              ]}
+              contextActions={(unit: Unit) => [
+                {
+                  label: "Vender",
+                  icon: <FiDollarSign />,
+                  onClick: () => setAction({ type: "sell", unit }),
+                },
+                {
+                  label: "Editar",
+                  icon: <FiEdit />,
+                  onClick: () => setAction({ type: "edit", unit }),
+                },
+                {
+                  label: "Excluir",
+                  icon: <FiTrash />,
+                  onClick: () => handleDelete(unit.id),
+                },
+              ]}
+              data={units.data}
+            />
+          </div>
         </div>
       </Layout>
     </>

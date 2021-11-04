@@ -1,5 +1,5 @@
 import { Layout } from "../../components/Layout";
 
-export function Records() {
+export function Results() {
   return <Layout>Resultados</Layout>;
 }

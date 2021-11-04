@@ -21,6 +21,7 @@ import {
   FiX,
   FiChevronDown,
   FiSettings,
+  FiEye,
 } from "react-icons/fi";
 import * as styled from "./styles";
 import { Category, Filters } from "./types";
@@ -34,6 +35,7 @@ interface FilterProps {
   currentCategory: Category;
   handleChange(e: any): void;
   color: string;
+  onToggleTotalizers: () => void;
 }
 
 const years = [2018, 2019, 2020, 2021, 2022];
@@ -243,6 +245,9 @@ export function TopBar(props: FilterProps) {
               <MenuItem value={0}>Não vendidos</MenuItem>
             </Select>
           </FormControl>
+          <IconButton onClick={props.onToggleTotalizers}>
+            <FiEye />
+          </IconButton>
         </div>
       </styled.FilterBar>
     </>
