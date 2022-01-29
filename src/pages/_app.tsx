@@ -1,16 +1,13 @@
-import { GlobalStyle } from "../styles/global";
-import { ThemeProvider } from "styled-components";
-import { theme } from "../styles/theme";
 import { CategoriesProvider } from "../contexts/CategoriesContext";
+import { ChakraProvider } from "@chakra-ui/react";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyle />
+    <ChakraProvider>
       <CategoriesProvider>
         <Component {...pageProps} />
       </CategoriesProvider>
-    </ThemeProvider>
+    </ChakraProvider>
   );
 }
 
