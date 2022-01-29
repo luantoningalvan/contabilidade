@@ -6,12 +6,19 @@ const prisma = new PrismaClient();
 class ProductsController {
   async index(req, res, next) {
     try {
-      const fetchProducts = await prisma.product.findMany();
+      const fetchProducts = await prisma.product.findMany({
+        include: { _count: { select: { units: true } } },
+      });
 
       res.json(
         fetchProducts.map((p) => ({
-          ...p,
+          id: p.id,
+          name: p.name,
+          natCode: p.natCode,
+          barCode: p.barCode,
+          original_price: p.original_price,
           thumb: `http://localhost:3333/public/thumb-${p.natCode}.jpg`,
+          totalUnits: p?._count?.units || 0,
         }))
       );
     } catch (error) {

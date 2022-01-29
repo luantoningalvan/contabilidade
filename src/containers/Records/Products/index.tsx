@@ -17,6 +17,7 @@ type Product = {
   id: number;
   name: string;
   thumb: string;
+  totalUnits: number;
 };
 
 export function Products() {
@@ -85,7 +86,7 @@ export function Products() {
                 <Heading size="sm" noOfLines={3} mb={2}>
                   {product.name}
                 </Heading>
-                <Text color="gray.600">03 unidades</Text>
+                <Text color="gray.600">{product.totalUnits} unidades</Text>
               </Box>
             </Box>
           ))}
