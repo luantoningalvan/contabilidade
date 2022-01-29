@@ -26,17 +26,18 @@ model Category {
 }
 
 model Unity {
-    id             Int       @id @default(autoincrement())
-    product_id     Int
-    product        Product   @relation(fields: [product_id], references: [id])
-    sold           Boolean   @default(false)
-    purchase_price Float
-    sale_price     Float?
-    sale_date      DateTime?
-    client_id      Int?
-    client         Client?   @relation(fields: [client_id], references: [id])
-    category_id    Int
-    category       Category  @relation(fields: [category_id], references: [id])
+    id              Int       @id @default(autoincrement())
+    product_id      Int
+    product         Product   @relation(fields: [product_id], references: [id])
+    sold            Boolean   @default(false)
+    purchase_price  Float
+    sale_price      Float?
+    sale_date       DateTime?
+    client_id       Int?
+    client          Client?   @relation(fields: [client_id], references: [id])
+    category_id     Int
+    category        Category  @relation(fields: [category_id], references: [id])
+    expiration_date DateTime?
 }
 
 model Client {
