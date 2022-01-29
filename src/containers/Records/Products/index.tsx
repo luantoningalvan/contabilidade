@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { FiPlus, FiSearch } from "react-icons/fi";
 import { NewProduct } from "../../../shared/NewProduct";
+import { ViewProduct } from "../../../shared/ViewProduct";
 type Product = {
   id: number;
   name: string;
@@ -23,6 +24,9 @@ type Product = {
 export function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [newProductDialog, setNewProductDialog] = useState(false);
+  const [viewProductDialog, setViewProductDialog] = useState<null | number>(
+    null
+  );
 
   const fetchProducts = useCallback(() => {
     api.get("products").then((res) => {
@@ -43,6 +47,15 @@ export function Products() {
           afterSubmit={fetchProducts}
         />
       )}
+
+      {viewProductDialog && (
+        <ViewProduct
+          open={!!viewProductDialog}
+          onClose={() => setViewProductDialog(null)}
+          productId={viewProductDialog}
+        />
+      )}
+
       <div>
         <Box display="flex" justifyContent="space-between">
           <InputGroup>
@@ -68,6 +81,7 @@ export function Products() {
               borderWidth={1}
               rounded={6}
               cursor="pointer"
+              onClick={() => setViewProductDialog(product.id)}
             >
               <Image
                 roundedBottomLeft={4}
