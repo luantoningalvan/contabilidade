@@ -1,5 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import {
+  MenuItem,
+  MenuList,
   Table as ChakraTable,
   Tbody,
   Td,
@@ -7,6 +9,13 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { ContextMenu } from "chakra-ui-contextmenu";
+
+type Action = {
+  label: string;
+  icon: React.ReactElement;
+  onClick: () => void;
+};
 
 type Column = {
   label: string;
@@ -18,6 +27,7 @@ type Column = {
 interface TableProps {
   columns: Column[];
   data: any[];
+  contextActions?: (row: any) => Action[];
 }
 
 export const Table = (props: TableProps) => {
@@ -38,15 +48,47 @@ export const Table = (props: TableProps) => {
         </Tr>
       </Thead>
       <Tbody>
-        {props.data.map((row) => (
-          <Tr key={`col-${row.id}`} hover>
-            {props.columns.map((col) => (
-              <Td textAlign={col.align} key={`col-${row.id}-${col.name}`}>
-                {col.format ? col.format(row[col.name], row) : row[col.name]}
-              </Td>
+        {props.contextActions
+          ? props.data.map((row) => (
+              <ContextMenu<HTMLDivElement>
+                renderMenu={() => (
+                  <MenuList>
+                    {props.contextActions &&
+                      props.contextActions(row).map((act) => (
+                        <MenuItem onClick={act.onClick} icon={act.icon}>
+                          {act.label}
+                        </MenuItem>
+                      ))}
+                  </MenuList>
+                )}
+              >
+                {(ref) => (
+                  <Tr key={`col-${row.id}`} ref={ref}>
+                    {props.columns.map((col) => (
+                      <Td
+                        textAlign={col.align}
+                        key={`col-${row.id}-${col.name}`}
+                      >
+                        {col.format
+                          ? col.format(row[col.name], row)
+                          : row[col.name]}
+                      </Td>
+                    ))}
+                  </Tr>
+                )}
+              </ContextMenu>
+            ))
+          : props.data.map((row) => (
+              <Tr key={`col-${row.id}`}>
+                {props.columns.map((col) => (
+                  <Td textAlign={col.align} key={`col-${row.id}-${col.name}`}>
+                    {col.format
+                      ? col.format(row[col.name], row)
+                      : row[col.name]}
+                  </Td>
+                ))}
+              </Tr>
             ))}
-          </Tr>
-        ))}
       </Tbody>
     </ChakraTable>
   );

@@ -15,6 +15,7 @@
     "@types/react-dom": "^17.0.9",
     "axios": "^0.24.0",
     "chakra-react-select": "^3.0.3",
+    "chakra-ui-contextmenu": "^1.0.3",
     "framer-motion": "^5",
     "polished": "^4.1.3",
     "react": "^17.0.2",

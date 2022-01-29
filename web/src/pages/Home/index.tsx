@@ -10,7 +10,14 @@ import {
   Fade,
   Slide,
 } from "@chakra-ui/react";
-import { FiPlus, FiArrowDown, FiArrowUp } from "react-icons/fi";
+import {
+  FiPlus,
+  FiArrowDown,
+  FiArrowUp,
+  FiCheckSquare,
+  FiEdit,
+  FiTrash,
+} from "react-icons/fi";
 import { api } from "../../services/api";
 import { Category, Unit } from "./types";
 
@@ -186,10 +193,13 @@ export function Home() {
                   label: "Vendido",
                   name: "sold",
                   align: "center",
-                  format: (v, row) => (
-                    <Checkbox
-                      defaultChecked={v}
-                      onChange={() => setAction({ type: "sell", unit: row })}
+                  width: 30,
+                  format: (v) =>
+                    v && (
+                      <FiCheckSquare
+                        size={18}
+                        color="#188d4f"
+                        style={{ display: "inline-block" }}
                     />
                   ),
                 },
@@ -203,6 +213,23 @@ export function Home() {
                 { label: "Cliente", name: "client_name", align: "right" },
               ]}
               data={units.data}
+              contextActions={(unit: Unit) => [
+                {
+                  label: "Vender",
+                  icon: <FiDollarSign />,
+                  onClick: () => setAction({ type: "sell", unit }),
+                },
+                {
+                  label: "Editar",
+                  icon: <FiEdit />,
+                  onClick: () => setAction({ type: "edit", unit }),
+                },
+                {
+                  label: "Excluir",
+                  icon: <FiTrash />,
+                  onClick: () => handleDelete(unit.id),
+                },
+              ]}
             />
           </Box>
         </div>
