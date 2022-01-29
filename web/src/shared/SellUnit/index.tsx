@@ -1,8 +1,9 @@
 import * as React from "react";
-import { VStack, Input, Heading } from "@chakra-ui/react";
+import { VStack, Input, Text, Select, useToast } from "@chakra-ui/react";
 import { Modal } from "../../components/Modal";
 import { api } from "../../services/api";
 import { Unit } from "../../pages/Home/types";
+import { useForm } from "react-hook-form";
 
 interface SellUnitProps {
   open: boolean;
@@ -13,20 +14,16 @@ interface SellUnitProps {
 
 export function SellUnit(props: SellUnitProps) {
   const { onClose, open, unit, afterSubmit } = props;
-  const formRef = React.useRef(null);
-  const [data, setData] = React.useState<any>({
-    sale_price: undefined,
-    client: null,
-  });
   const [clients, setClients] = React.useState([]);
+  const { register, handleSubmit } = useForm();
+  const toast = useToast();
 
+  console.log(unit);
   const searchClients = (term?: string) => {
     api
       .get("/clients")
       .then((res) =>
-        setClients(
-          res.data.map((p) => ({ id: p.id, label: p.name, key: p.id }))
-        )
+        setClients(res.data.map((p) => ({ value: p.id, label: p.name })))
       );
   };
 
@@ -34,23 +31,20 @@ export function SellUnit(props: SellUnitProps) {
     searchClients();
   }, [unit]);
 
-  const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     try {
       await api.post(`/units/${unit.id}/sell`, {
         sale_price: Number(data.sale_price),
-        client: data.client.id,
+        client: Number(data.client),
       });
+
+      toast({ status: "success", title: "Venda realizada com sucesso" });
 
       typeof afterSubmit === "function" && afterSubmit();
 
       onClose();
     } catch (error) {
-      alert("Erro ao vender unidade");
+      toast({ status: "error", title: "Erro ao vender produto" });
     }
   };
 
@@ -62,32 +56,31 @@ export function SellUnit(props: SellUnitProps) {
       footer={{
         primary: {
           text: "Vender",
-          onClick: () =>
-            formRef.current.dispatchEvent(
-              new Event("submit", { cancelable: true, bubbles: true })
-            ),
+          onClick: handleSubmit(onSubmit),
         },
         secondary: { text: "Cancelar", onClick: onClose },
       }}
     >
-      <form onSubmit={handleSubmit} ref={formRef}>
-        <VStack spacing={2}>
-          <Heading variant="body2">{unit.name}</Heading>
-          {/* <Autocomplete
-              value={data.client}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              renderInput={(params) => (
-                <TextField {...params} name="client" label="Cliente" />
-              )}
-              options={clients}
-              onChange={(_, value) => setData({ ...data, client: value })}
-            /> */}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <VStack spacing={2} align="start">
+          <Text fontSize="lg" mb={2}>
+            {unit.name}
+          </Text>
+          <Select
+            flex={4}
+            placeholder="Selecione o cliente"
+            {...register("client")}
+          >
+            {clients.map((client) => (
+              <option key={client.value} value={client.value}>
+                {client.label}
+              </option>
+            ))}
+          </Select>
           <Input
-            label="Valor da venda"
-            name="sale_price"
-            value={data.sale_price}
-            onChange={handleChange}
+            placeholder="Valor da venda"
             fullWidth
+            {...register("sale_price")}
           />
         </VStack>
       </form>
