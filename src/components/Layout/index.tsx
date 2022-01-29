@@ -1,42 +1,74 @@
-import * as styled from "./styles";
 import Link from "next/link";
 import { FiUsers, FiBarChart, FiBox } from "react-icons/fi";
-import { FaCalculator } from "react-icons/fa";
+import { Box } from "@chakra-ui/react";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
+const links = [
+  { url: "/", icon: FiBox },
+  { url: "/results", icon: FiBarChart },
+  { url: "/records", icon: FiUsers },
+];
+
 export const Layout = (props: LayoutProps) => {
   return (
     <>
-      <styled.Navbar>
-        <div className="logo">
-          <Link href="/">
-            <a>
-              <FaCalculator size={20} />
-            </a>
+      <Box
+        w="56px"
+        h="100vh"
+        display="flex"
+        borderRightWidth={1}
+        flexDirection="column"
+        align="center"
+        pos="fixed"
+        top={0}
+        left={0}
+      >
+        <Box
+          w="56px"
+          h="56px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          fontSize="1.3rem"
+          lineHeight="1.3rem"
+          borderBottomWidth={1}
+        >
+          <Link href="/" passHref>
+            <img src="./logo.svg" />
           </Link>
-        </div>
-        <nav>
-          <Link href="/">
-            <a>
-              <FiBox size={20} />
-            </a>
-          </Link>
-          <Link href="/results">
-            <a>
-              <FiBarChart size={20} />
-            </a>
-          </Link>
-          <Link href="/records">
-            <a>
-              <FiUsers size={20} />
-            </a>
-          </Link>
-        </nav>
-      </styled.Navbar>
-      <styled.Main>{props.children}</styled.Main>
+        </Box>
+
+        <Box
+          as="nav"
+          display="flex"
+          flexDirection="column"
+          height="3rem"
+          alignItems="center"
+          gap={1}
+          mt={2}
+        >
+          {links.map((link) => (
+            <Link key={link.url} href={link.url} passHref>
+              <Box
+                textDecor="none"
+                rounded={4}
+                color="gray.700"
+                p={2}
+                _hover={{ bg: "gray.100" }}
+                as="a"
+              >
+                <link.icon size={22} />
+              </Box>
+            </Link>
+          ))}
+        </Box>
+      </Box>
+      <Box as="main" ml="56px">
+        {props.children}
+      </Box>
     </>
   );
 };

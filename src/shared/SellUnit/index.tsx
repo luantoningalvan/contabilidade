@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Grid, Autocomplete, TextField, Typography } from "@mui/material";
+import { VStack, Input, Heading } from "@chakra-ui/react";
 import { Modal } from "../../components/Modal";
 import { api } from "../../services/api";
 import { Unit } from "../../containers/Home/types";
@@ -58,8 +58,6 @@ export function SellUnit(props: SellUnitProps) {
     <Modal
       open={open}
       onClose={onClose}
-      maxWidth="sm"
-      fullWidth
       title={`Vender`}
       footer={{
         primary: {
@@ -73,12 +71,9 @@ export function SellUnit(props: SellUnitProps) {
       }}
     >
       <form onSubmit={handleSubmit} ref={formRef}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography variant="body2">{unit.name}</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Autocomplete
+        <VStack spacing={2}>
+          <Heading variant="body2">{unit.name}</Heading>
+          {/* <Autocomplete
               value={data.client}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               renderInput={(params) => (
@@ -86,18 +81,15 @@ export function SellUnit(props: SellUnitProps) {
               )}
               options={clients}
               onChange={(_, value) => setData({ ...data, client: value })}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Valor da venda"
-              name="sale_price"
-              value={data.sale_price}
-              onChange={handleChange}
-              fullWidth
-            />
-          </Grid>
-        </Grid>
+            /> */}
+          <Input
+            label="Valor da venda"
+            name="sale_price"
+            value={data.sale_price}
+            onChange={handleChange}
+            fullWidth
+          />
+        </VStack>
       </form>
     </Modal>
   );

@@ -1,17 +1,20 @@
 import * as React from "react";
 import {
   Button,
-  Dialog,
-  DialogProps,
-  Typography,
-  IconButton,
-} from "@mui/material";
-import { ModalHeader, ModalContent, ModalFooter } from "./styles";
-import { FiX } from "react-icons/fi";
+  Modal as ChakraModal,
+  ModalProps as ChakraModalProps,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  ModalFooter,
+  ModalHeader,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 
-interface ModalProps extends DialogProps {
-  title: string;
+interface ModalProps extends Omit<ChakraModalProps, "isOpen"> {
+  title?: string;
   onClose: () => void;
+  open?: boolean;
   children: React.ReactElement;
   footer?: {
     primary: {
@@ -27,41 +30,32 @@ interface ModalProps extends DialogProps {
 }
 
 export function Modal(props: ModalProps) {
-  const { title, children, footer, ...rest } = props;
+  const { title, children, footer, open, onClose, ...rest } = props;
 
   return (
-    <Dialog {...rest}>
-      <div style={{ padding: 24 }}>
-        <ModalHeader>
-          <Typography variant="h5">{title}</Typography>
-          <IconButton onClick={props.onClose}>
-            <FiX />
-          </IconButton>
-        </ModalHeader>
-
-        <ModalContent>{children}</ModalContent>
+    <ChakraModal isOpen={open} onClose={onClose} {...rest}>
+      <ModalOverlay />
+      <ModalContent>
+        {!!title && <ModalHeader>{title}</ModalHeader>}
+        <ModalCloseButton />
+        <ModalBody>{children}</ModalBody>
 
         {footer && (
-          <ModalFooter>
-            {footer.aditionalAction && (
-              <div style={{ flex: 1 }}>{footer.aditionalAction}</div>
+          <ModalFooter gap={2}>
+            {footer?.aditionalAction && (
+              <div style={{ flex: 1 }}>{footer?.aditionalAction}</div>
             )}
-            {footer.secondary && (
-              <Button size="large" onClick={footer.secondary.onClick}>
+            {footer?.secondary && (
+              <Button variant="ghost" onClick={footer?.secondary.onClick}>
                 {footer.secondary.text}
               </Button>
             )}
-            <Button
-              size="large"
-              disableElevation
-              onClick={footer.primary.onClick}
-              variant="contained"
-            >
-              {footer.primary.text}
+            <Button colorScheme="blue" onClick={footer?.primary.onClick}>
+              {footer?.primary.text}
             </Button>
           </ModalFooter>
         )}
-      </div>
-    </Dialog>
+      </ModalContent>
+    </ChakraModal>
   );
 }
