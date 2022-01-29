@@ -4,11 +4,10 @@ import {
   Box,
   Text,
   chakra,
-  Checkbox,
   Heading,
   Stack,
-  Fade,
   Slide,
+  useToast,
 } from "@chakra-ui/react";
 import {
   FiPlus,
@@ -30,6 +29,7 @@ import { FiDollarSign } from "react-icons/fi";
 import { SellUnit } from "../../shared/SellUnit";
 import { parseOptions } from "../../utils/parseOptions";
 import { formatToBrl } from "../../utils/formatToBrl";
+import { useConfirmation } from "../../hooks/useConfirmation";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -47,6 +47,8 @@ export function Home() {
   }>(null);
   const [filters, setFilters] = React.useState({});
   const [totalizers, setTotalizers] = React.useState(false);
+  const confirmation = useConfirmation();
+  const toast = useToast();
 
   function handleChange(category) {
     setCurrentCategory(category);
@@ -59,12 +61,14 @@ export function Home() {
   }
 
   async function handleDelete(id: number) {
-    const confirmExclusion = window.confirm("Relmente deseja excluir?");
-
-    if (confirmExclusion) {
+    confirmation({
+      title: "Excluir unidade?",
+      description: "Não será possível recuperá-la",
+    }).then(async () => {
       await api.delete(`/units/${id}`);
       fetchUnits();
-    }
+      toast({ status: "success", title: "Unidade excluída" });
+    });
   }
 
   React.useEffect(() => {
@@ -179,7 +183,7 @@ export function Home() {
             onToggleTotalizers={() => setTotalizers(!totalizers)}
           />
 
-          <Box h="calc(100vh - 154px)" overflow="auto" mt={2}>
+          <Box h="calc(100vh - 64px)" overflow="auto" mt={2}>
             <Table
               columns={[
                 { label: "Nome", name: "name" },
@@ -200,8 +204,8 @@ export function Home() {
                         size={18}
                         color="#188d4f"
                         style={{ display: "inline-block" }}
-                    />
-                  ),
+                      />
+                    ),
                 },
                 {
                   label: "Preço Venda",
