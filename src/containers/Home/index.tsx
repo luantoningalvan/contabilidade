@@ -22,6 +22,7 @@ import { useCategories } from "../../contexts/CategoriesContext";
 import { FiDollarSign } from "react-icons/fi";
 import { SellUnit } from "../../shared/SellUnit";
 import { parseOptions } from "../../utils/parseOptions";
+import { formatToBrl } from "../../utils/formatToBrl";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -131,10 +132,7 @@ export function Home() {
                   <FiArrowDown size={20} />
                 </Box>
                 <Heading size="lg" color="gray.700">
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(units.totalizers.purchases)}
+                  {formatToBrl(units.totalizers.purchases)}
                 </Heading>
               </Box>
               <Box borderWidth={1} p={4} rounded={4}>
@@ -143,10 +141,7 @@ export function Home() {
                   <FiArrowUp size={20} />
                 </Box>
                 <Heading size="lg" color="gray.700">
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(units.totalizers.sales)}
+                  {formatToBrl(units.totalizers.sales)}
                 </Heading>
               </Box>
               <Box borderWidth={1} p={4} rounded={4}>
@@ -155,10 +150,7 @@ export function Home() {
                   <FiDollarSign size={20} />
                 </Box>
                 <Heading size="lg" color="gray.700">
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(units.totalizers.profit)}
+                  {formatToBrl(units.totalizers.profit)}
                 </Heading>
               </Box>
             </Stack>
