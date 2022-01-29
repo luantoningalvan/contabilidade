@@ -1,13 +1,12 @@
 import * as React from "react";
-import {
-  Grid,
-  Autocomplete,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-} from "@mui/material";
+import { Input, Stack } from "@chakra-ui/react";
 import { Modal } from "../../components/Modal";
 import { api } from "../../services/api";
+import io, { Socket } from "socket.io-client";
+import { Select } from "chakra-react-select";
+import { AssociateProduct } from "./associateProduct";
+import { useForm } from "react-hook-form";
+
 interface NewUnitProps {
   open: boolean;
   onClose: () => void;
@@ -15,27 +14,52 @@ interface NewUnitProps {
   afterSubmit: () => void;
 }
 
-const DATA_INITIAL_STATE = {
-  product: null,
-  quantity: 1,
-  price: null,
-};
-
 export function NewUnit(props: NewUnitProps) {
   const { onClose, open, category, afterSubmit } = props;
-  const [data, setData] = React.useState<any>(DATA_INITIAL_STATE);
-  const [keepGoing, setKeepGoing] = React.useState(false);
-  const formRef = React.useRef(null);
-
+  const socketRef = React.useRef<Socket>();
   const [products, setProducts] = React.useState([]);
+  const [associateProduct, setAssociateProducts] = React.useState<
+    null | string
+  >(null);
+  const [selectedProduct, setSelectedProduct] = React.useState(null);
+  const { register, handleSubmit, setValue } = useForm();
+
+  React.useEffect(() => {
+    const socket = io("http://127.0.0.1:3333");
+
+    socket.on("connect", () => {
+      console.log("socket connected");
+    });
+
+    socket.on("disconnect", () => {
+      console.log("socket disconnected");
+    });
+
+    socket.on("newProductScanned", (data) => {
+      if (data.isAssociated) {
+        setValue("quantity", 1);
+        setValue("price", data.product.original_price);
+        setSelectedProduct({
+          label: data.product.name,
+          value: data.product.id,
+        });
+      } else {
+        setAssociateProducts(data.code);
+      }
+    });
+
+    socketRef.current = socket;
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   const searchProducts = (term?: string) => {
     api
       .get("/products")
       .then((res) =>
-        setProducts(
-          res.data.map((p) => ({ id: p.code, label: p.name, key: p.code }))
-        )
+        setProducts(res.data.map((p) => ({ value: p.id, label: p.name })))
       );
   };
 
@@ -43,15 +67,11 @@ export function NewUnit(props: NewUnitProps) {
     searchProducts();
   }, []);
 
-  const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     try {
+      console.log(selectedProduct);
       await api.post("/units", {
-        product: data.product.id,
+        product: selectedProduct.value,
         price: Number(data.price),
         quantity: Number(data.quantity),
         category: category,
@@ -59,78 +79,67 @@ export function NewUnit(props: NewUnitProps) {
 
       typeof afterSubmit === "function" && afterSubmit();
 
-      if (keepGoing) {
-        setData(DATA_INITIAL_STATE);
-      } else {
-        onClose();
-      }
+      onClose();
     } catch (error) {
       alert("Erro ao adicionar unidades");
     }
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      title="Incluir unidades"
-      footer={{
-        primary: {
-          text: "Adicionar",
-          onClick: () =>
-            formRef.current.dispatchEvent(
-              new Event("submit", { cancelable: true, bubbles: true })
-            ),
-        },
-        secondary: { text: "Cancelar", onClick: onClose },
-        aditionalAction: (
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={keepGoing}
-                onChange={(e) => setKeepGoing(e.target.checked)}
+    <>
+      <Modal
+        open={open}
+        onClose={onClose}
+        title="Incluir unidades"
+        size="3xl"
+        footer={{
+          primary: {
+            text: "Adicionar",
+            onClick: handleSubmit(onSubmit),
+          },
+          secondary: { text: "Cancelar", onClick: onClose },
+        }}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack direction="row" spacing={2}>
+            <div style={{ width: "100%" }}>
+              <Select
+                options={products}
+                placeholder="Produto"
+                onChange={(v) => setSelectedProduct(v)}
+                value={selectedProduct}
               />
-            }
-            label="Continuar cadastrando"
-          />
-        ),
-      }}
-    >
-      <form onSubmit={handleSubmit} ref={formRef}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Autocomplete
-              value={data.product}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              renderInput={(params) => (
-                <TextField {...params} name="product" label="Produto" />
-              )}
-              options={products}
-              onChange={(_, value) => setData({ ...data, product: value })}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
+            </div>
+            <Input
               label="Quantidade"
-              name="quantity"
-              value={data.quantity}
-              onChange={handleChange}
               type="number"
+              placeholder="Quantidade"
+              {...register("quantity", { valueAsNumber: true })}
             />
-          </Grid>
-          <Grid item xs={8}>
-            <TextField
+            <Input
               label="Valor"
-              name="price"
-              value={data.price}
-              onChange={handleChange}
               fullWidth
+              placeholder="Valor"
+              {...register("price", { valueAsNumber: true })}
             />
-          </Grid>
-        </Grid>
-      </form>
-    </Modal>
+          </Stack>
+        </form>
+      </Modal>
+      {associateProduct && (
+        <AssociateProduct
+          open={!!associateProduct}
+          onClose={() => setAssociateProducts(null)}
+          barCode={associateProduct}
+          afterSubmit={(data) => {
+            setValue("quantity", 1);
+            setValue("price", data.original_price);
+            setSelectedProduct({
+              label: data.name,
+              value: data.id,
+            });
+          }}
+        />
+      )}
+    </>
   );
 }
