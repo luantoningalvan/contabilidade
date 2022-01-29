@@ -8,7 +8,10 @@ class UnitsController {
       const date = new Date(req.query.period);
 
       const fetchUnits = await prisma.unity.findMany({
-        include: { client: true, product: true },
+        include: {
+          client: { select: { name: true } },
+          product: { select: { name: true } },
+        },
         orderBy: { sale_date: "desc" },
         where: {
           ...(req.query.cat && { category_id: Number(req.query.cat) }),
@@ -22,8 +25,10 @@ class UnitsController {
 
       res.json({
         data: fetchUnits.map((unit) => ({
+          id: unit.id,
           client_name: unit.client?.name,
           name: unit.product.name,
+          sold: unit.sold,
           purchase_price: formatMoney(unit.purchase_price),
           sale_price: unit.sold ? formatMoney(unit.sale_price) : null,
           sale_date: unit.sale_date,
