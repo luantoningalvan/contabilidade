@@ -26,6 +26,22 @@ class ProductsController {
     }
   }
 
+  async show(req, res, next) {
+    try {
+      const findProduct = await prisma.product.findFirst({
+        where: { id: Number(req.params.id) },
+        include: { units: true },
+      });
+
+      res.json({
+        ...findProduct,
+        thumb: `http://localhost:3333/public/thumb-${findProduct.natCode}.jpg`,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async create(req, res, next) {
     try {
       const createProduct = await prisma.product.create({ data: req.body });
