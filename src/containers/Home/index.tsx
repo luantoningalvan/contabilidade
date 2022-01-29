@@ -1,7 +1,16 @@
 import * as React from "react";
 
-import { Drawer, Fab } from "@mui/material";
-import { FiPlus, FiCheckCircle, FiArrowDown, FiArrowUp } from "react-icons/fi";
+import {
+  Box,
+  Text,
+  chakra,
+  Checkbox,
+  Heading,
+  Stack,
+  Fade,
+  Slide,
+} from "@chakra-ui/react";
+import { FiPlus, FiArrowDown, FiArrowUp } from "react-icons/fi";
 import { api } from "../../services/api";
 import { Category, Unit } from "./types";
 
@@ -10,10 +19,9 @@ import { TopBar } from "./TopBar";
 import { Table } from "../../components/Table";
 import { NewUnit } from "../../shared/NewUnit";
 import { useCategories } from "../../contexts/CategoriesContext";
-import { FiDollarSign, FiEdit, FiTrash } from "react-icons/fi";
+import { FiDollarSign } from "react-icons/fi";
 import { SellUnit } from "../../shared/SellUnit";
 import { parseOptions } from "../../utils/parseOptions";
-import { Totalizers } from "./styles";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -88,70 +96,79 @@ export function Home() {
       )}
 
       <Layout>
-        <Fab
+        <chakra.button
+          size="lg"
           aria-label="Incluir unidade"
-          style={{
-            position: "fixed",
-            bottom: 24,
-            right: 24,
-            background: currentCategory?.color,
-            color: "#fff",
-          }}
+          pos="fixed"
+          bg={currentCategory?.color}
+          right="24px"
+          bottom="24px"
+          h="56px"
+          w="56px"
+          display="flex"
+          shadow="md"
+          justifyContent="center"
+          alignItems="center"
+          rounded="50%"
           onClick={() => setNewUnit(true)}
         >
-          <FiPlus size={32} />
-        </Fab>
+          <FiPlus size={32} color="white" />
+        </chakra.button>
 
-        <Drawer
-          style={{ width: 200 }}
-          anchor="right"
-          variant="persistent"
-          open={totalizers}
-        >
-          <Totalizers>
-            <div>
-              <header>
-                <p>Compras</p>
-                <FiArrowDown size={20} />
-              </header>
-              <strong>
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(units.totalizers.purchases)}
-              </strong>
-            </div>
-            <div>
-              <header>
-                <p>Vendas</p>
-                <FiArrowUp size={20} />
-              </header>
-              <strong>
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(units.totalizers.sales)}
-              </strong>
-            </div>
-            <div className="highlight-color">
-              <header>
-                <p>Lucro</p>
-                <FiDollarSign size={20} />
-              </header>
-              <strong>
-                {new Intl.NumberFormat("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                }).format(units.totalizers.profit)}
-              </strong>
-            </div>
-          </Totalizers>
-        </Drawer>
+        <Slide in={totalizers}>
+          <Box
+            borderLeftWidth={1}
+            p={3}
+            h="full"
+            w="240px"
+            pos="fixed"
+            right={0}
+          >
+            <Stack spacing={2}>
+              <Box borderWidth={1} p={4} rounded={4}>
+                <Box display="flex" gap={2} color="gray.500">
+                  <Text>Compras</Text>
+                  <FiArrowDown size={20} />
+                </Box>
+                <Heading size="lg" color="gray.700">
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(units.totalizers.purchases)}
+                </Heading>
+              </Box>
+              <Box borderWidth={1} p={4} rounded={4}>
+                <Box display="flex" color="gray.500" gap={2}>
+                  <Text>Vendas</Text>
+                  <FiArrowUp size={20} />
+                </Box>
+                <Heading size="lg" color="gray.700">
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(units.totalizers.sales)}
+                </Heading>
+              </Box>
+              <Box borderWidth={1} p={4} rounded={4}>
+                <Box display="flex" gap={2} color="gray.500">
+                  <Text>Lucro</Text>
+                  <FiDollarSign size={20} />
+                </Box>
+                <Heading size="lg" color="gray.700">
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(units.totalizers.profit)}
+                </Heading>
+              </Box>
+            </Stack>
+          </Box>
+        </Slide>
 
         <div
           style={{
-            transition: "width 0.2s",
-            width: totalizers ? "calc(100% - 200px)" : "100%",
+            transition: "width 0.5s",
+            width: totalizers ? "calc(100% - 240px)" : "100%",
           }}
         >
           <TopBar
@@ -163,7 +180,7 @@ export function Home() {
             onToggleTotalizers={() => setTotalizers(!totalizers)}
           />
 
-          <div style={{ height: "calc(100vh - 154px)", overflow: "auto" }}>
+          <Box h="calc(100vh - 154px)" overflow="auto" mt={2}>
             <Table
               columns={[
                 { label: "Nome", name: "name" },
@@ -177,7 +194,12 @@ export function Home() {
                   label: "Vendido",
                   name: "sold",
                   align: "center",
-                  format: (v) => v && <FiCheckCircle color="#03aa03" />,
+                  format: (v, row) => (
+                    <Checkbox
+                      defaultChecked={v}
+                      onChange={() => setAction({ type: "sell", unit: row })}
+                    />
+                  ),
                 },
                 {
                   label: "Preço Venda",
@@ -188,26 +210,9 @@ export function Home() {
                 { label: "Lucro", name: "profit", align: "right", width: 130 },
                 { label: "Cliente", name: "client_name", align: "right" },
               ]}
-              contextActions={(unit: Unit) => [
-                {
-                  label: "Vender",
-                  icon: <FiDollarSign />,
-                  onClick: () => setAction({ type: "sell", unit }),
-                },
-                {
-                  label: "Editar",
-                  icon: <FiEdit />,
-                  onClick: () => setAction({ type: "edit", unit }),
-                },
-                {
-                  label: "Excluir",
-                  icon: <FiTrash />,
-                  onClick: () => handleDelete(unit.id),
-                },
-              ]}
               data={units.data}
             />
-          </div>
+          </Box>
         </div>
       </Layout>
     </>

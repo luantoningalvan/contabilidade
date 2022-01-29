@@ -5,25 +5,28 @@ import {
   Divider,
   FormControl,
   Grid,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  ListItemIcon,
-  ListItemText,
   Menu,
   MenuItem,
   Select,
-  TextField,
-} from "@mui/material";
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Flex,
+  MenuButton,
+  MenuList,
+  IconButton,
+  ThemeProvider,
+  extendTheme,
+} from "@chakra-ui/react";
 import {
   FiSearch,
   FiCalendar,
   FiX,
-  FiChevronDown,
   FiSettings,
   FiEye,
+  FiBarChart2,
 } from "react-icons/fi";
-import * as styled from "./styles";
+import { HiViewGrid } from "react-icons/hi";
 import { Category, Filters } from "./types";
 import { Modal } from "../../components/Modal";
 import { useCategories } from "../../contexts/CategoriesContext";
@@ -68,8 +71,6 @@ export function PeriodModal(props: {
     <Modal
       open={props.open}
       onClose={props.onClose}
-      fullWidth
-      maxWidth="xs"
       title="Escolha o mês"
       footer={{
         primary: {
@@ -84,7 +85,6 @@ export function PeriodModal(props: {
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Mês</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -95,16 +95,15 @@ export function PeriodModal(props: {
               }
             >
               {months.map((month, index) => (
-                <MenuItem key={month} value={index}>
+                <option key={month} value={index}>
                   {month}
-                </MenuItem>
+                </option>
               ))}
             </Select>
           </FormControl>
         </Grid>
         <Grid item xs={6}>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Ano</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -115,9 +114,9 @@ export function PeriodModal(props: {
               }
             >
               {years.map((year) => (
-                <MenuItem key={year} value={year}>
+                <option key={year} value={year}>
                   {year}
-                </MenuItem>
+                </option>
               ))}
             </Select>
           </FormControl>
@@ -133,7 +132,10 @@ export function TopBar(props: FilterProps) {
   const [configure, setConfigure] = React.useState(false);
   const { categories } = useCategories();
   const { currentCategory, handleChange } = props;
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const darkTheme = extendTheme({
+    initialColorMode: "dark",
+    useSystemColorMode: false,
+  });
 
   return (
     <>
@@ -152,104 +154,95 @@ export function TopBar(props: FilterProps) {
           })
         }
       />
-      <styled.FilterBar color={props.color}>
-        <Button
-          variant="outlined"
-          onClick={(e) => setAnchorEl(e.currentTarget)}
-          endIcon={<FiChevronDown />}
-        >
-          {currentCategory?.name}
-        </Button>
 
-        <Menu
-          open={!!anchorEl}
-          anchorEl={anchorEl}
-          onClose={() => setAnchorEl(null)}
-          onChange={handleChange}
+      <ThemeProvider theme={darkTheme}>
+        <Flex
+          justifyContent="space-between"
+          py={2}
+          px={4}
+          h="56px"
+          borderBottomWidth={1}
         >
-          {categories.map((cat) => (
-            <MenuItem
-              value={cat.id}
-              key={cat.id}
-              onClick={() => {
-                handleChange(cat);
-                setAnchorEl(null);
-              }}
-            >
-              {cat.name}
-            </MenuItem>
-          ))}
-          <Divider />
-          <MenuItem
-            onClick={() => {
-              setConfigure(true);
-              setAnchorEl(null);
-            }}
-          >
-            <ListItemIcon>
-              <FiSettings size={18} />
-            </ListItemIcon>
-            <ListItemText>Configurar categorias</ListItemText>
-          </MenuItem>
-        </Menu>
-
-        <div>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FiSearch />
-                </InputAdornment>
-              ),
-            }}
-            size="small"
-            variant="outlined"
-            placeholder="Buscar produto"
-          />
-          {filters.status === 1 && (
-            <div>
-              {filters.period && (
-                <IconButton
-                  size="small"
-                  onClick={() => setFilters({ ...filters, period: undefined })}
+          <Menu>
+            <MenuButton as={Button} variant="outline" leftIcon={<HiViewGrid />}>
+              {currentCategory?.name}
+            </MenuButton>
+            <MenuList>
+              {categories.map((cat) => (
+                <MenuItem
+                  value={cat.id}
+                  key={cat.id}
+                  onClick={() => handleChange(cat)}
                 >
-                  <FiX />
-                </IconButton>
-              )}
-              <Button
-                endIcon={<FiCalendar />}
-                onClick={() => setPeriodModal(true)}
+                  {cat.name}
+                </MenuItem>
+              ))}
+              <Divider />
+              <MenuItem
+                icon={<FiSettings size={18} />}
+                onClick={() => setConfigure(true)}
               >
-                {filters.period
-                  ? new Intl.DateTimeFormat("pt-BR", {
-                      month: "long",
-                      year: "numeric",
-                    }).format(new Date(filters.period))
-                  : "Todo tempo"}
-              </Button>
-            </div>
-          )}
-          <FormControl size="small" style={{ minWidth: 200 }}>
-            <InputLabel id="demo-simple-select-label">Situação</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Situação"
-              value={filters.status}
-              onChange={(e) =>
-                setFilters({ ...filters, status: e.target.value as number })
-              }
+                Configurar categorias
+              </MenuItem>
+            </MenuList>
+          </Menu>
+
+          <Flex gap={2}>
+            <InputGroup>
+              <InputLeftElement>
+                <FiSearch />
+              </InputLeftElement>
+              <Input placeholder="Buscar produto" width="auto" />
+            </InputGroup>
+            {filters.status === 1 && (
+              <div>
+                {filters.period && (
+                  <Button
+                    size="small"
+                    onClick={() =>
+                      setFilters({ ...filters, period: undefined })
+                    }
+                  >
+                    <FiX />
+                  </Button>
+                )}
+                <Button
+                  endIcon={<FiCalendar />}
+                  onClick={() => setPeriodModal(true)}
+                >
+                  {filters.period
+                    ? new Intl.DateTimeFormat("pt-BR", {
+                        month: "long",
+                        year: "numeric",
+                      }).format(new Date(filters.period))
+                    : "Todo tempo"}
+                </Button>
+              </div>
+            )}
+            <FormControl size="small" style={{ minWidth: 200 }}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Situação"
+                value={filters.status}
+                onChange={(e) =>
+                  setFilters({ ...filters, status: Number(e.target.value) })
+                }
+              >
+                <option value={null}>Todos</option>
+                <option value={1}>Vendidos</option>
+                <option value={0}>Não vendidos</option>
+              </Select>
+            </FormControl>
+            <IconButton
+              aria-label="Visualizar totalizadores"
+              onClick={props.onToggleTotalizers}
             >
-              <MenuItem value={null}>Todos</MenuItem>
-              <MenuItem value={1}>Vendidos</MenuItem>
-              <MenuItem value={0}>Não vendidos</MenuItem>
-            </Select>
-          </FormControl>
-          <IconButton onClick={props.onToggleTotalizers}>
-            <FiEye />
-          </IconButton>
-        </div>
-      </styled.FilterBar>
+              <FiBarChart2 />
+            </IconButton>
+          </Flex>
+        </Flex>
+      </ThemeProvider>
     </>
   );
 }
