@@ -1,38 +1,32 @@
-const conn = require("../db/conn");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const { formatMoney } = require("../utils/formatMoney");
 
 class UnitsController {
   async index(req, res, next) {
     try {
-      const fetchUnits = await conn
-        .select(["products.*", "units.*", "clients.name as client_name"])
-        .from("units")
-        .where((qb) => {
-          if (req.query.cat) {
-            qb.where("units.category_id", "=", req.query.cat);
-          }
+      const date = new Date(req.query.period);
 
-          if (req.query.status) {
-            qb.where("units.sold", "=", req.query.status === "1");
-          }
-
-          if (req.query.status === "1" && req.query.period) {
-            const date = new Date(req.query.period);
-            qb.whereBetween("sale_date", [
-              new Date(date.getFullYear(), date.getMonth(), 1),
-              new Date(date.getFullYear(), date.getMonth(), 31),
-            ]);
-          }
-        })
-        .orderBy("sale_date")
-        .innerJoin("products", "products.code", "units.product_id")
-        .leftJoin("clients", "clients.id", "units.client_id");
+      const fetchUnits = await prisma.unity.findMany({
+        include: { client: true, product: true },
+        orderBy: { sale_date: "desc" },
+        where: {
+          ...(req.query.cat && { category_id: Number(req.query.cat) }),
+          ...(req.query.status && { sold: req.query.status === "1" }),
+          ...(req.query.status &&
+            req.query.period && {
+              AND: [{ sale_date: { lte: date } }, { sale_date: { gte: date } }],
+            }),
+        },
+      });
 
       res.json({
         data: fetchUnits.map((unit) => ({
-          ...unit,
+          client_name: unit.client?.name,
+          name: unit.product.name,
           purchase_price: formatMoney(unit.purchase_price),
           sale_price: unit.sold ? formatMoney(unit.sale_price) : null,
+          sale_date: unit.sale_date,
           profit: unit.sold
             ? formatMoney(unit.sale_price - unit.purchase_price)
             : null,
@@ -63,18 +57,21 @@ class UnitsController {
     const data = req.body;
 
     try {
-      Array.from(Array(data.quantity).keys()).forEach(async () => {
-        await conn("units").insert(
-          {
-            product_id: data.product,
-            purchase_price: data.price,
-            category_id: data.category,
-            sold: false,
-          },
-          ["*"]
-        );
+      const dataToInsert = Array(data.quantity)
+        .fill(1)
+        .map(() => ({
+          product_id: data.product,
+          purchase_price: data.price,
+          category_id: data.category,
+          sold: false,
+        }));
+
+      const results = await prisma.unity.createMany({
+        data: dataToInsert,
+        skipDuplicates: false,
       });
-      res.json({});
+
+      res.json(results);
     } catch (error) {
       next(error);
     }
@@ -83,7 +80,7 @@ class UnitsController {
   async remove(req, res, next) {
     const { id: unit_id } = req.params;
     try {
-      await conn("units").where("id", unit_id).first().del();
+      await prisma.unity.delete({ where: { id: Number(unit_id) } });
       res.json({ ok: true });
     } catch (error) {
       next(error);

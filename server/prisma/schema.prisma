@@ -1,0 +1,46 @@
+datasource db {
+    url      = env("DATABASE_URL")
+    provider = "postgresql"
+}
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["fullTextSearch"]
+
+}
+
+model Product {
+    id             Int     @id @default(autoincrement())
+    name           String?
+    barCode        String?
+    natCode        String?
+    original_price Float?
+    units          Unity[]
+}
+
+model Category {
+    id    Int     @id @default(autoincrement())
+    name  String
+    color String
+    units Unity[]
+}
+
+model Unity {
+    id             Int       @id @default(autoincrement())
+    product_id     Int
+    product        Product   @relation(fields: [product_id], references: [id])
+    sold           Boolean   @default(false)
+    purchase_price Float
+    sale_price     Float?
+    sale_date      DateTime?
+    client_id      Int?
+    client         Client?   @relation(fields: [client_id], references: [id])
+    category_id    Int
+    category       Category  @relation(fields: [category_id], references: [id])
+}
+
+model Client {
+    id    Int     @id @default(autoincrement())
+    name  String
+    units Unity[]
+}

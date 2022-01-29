@@ -1,9 +1,10 @@
-const conn = require("../db/conn");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 class CategoriesController {
   async index(req, res, next) {
     try {
-      const fetchCategories = await conn.select("*").from("categories");
+      const fetchCategories = await prisma.category.findMany();
 
       res.json(fetchCategories);
     } catch (error) {
@@ -15,15 +16,14 @@ class CategoriesController {
     const data = req.body;
 
     try {
-      const createCategory = await conn("categories").insert(
-        {
+      const createCategory = await prisma.category.create({
+        data: {
           name: data.name,
           color: data.color,
         },
-        ["*"]
-      );
+      });
 
-      res.json(createCategory[0]);
+      res.json(createCategory);
     } catch (error) {
       next(error);
     }

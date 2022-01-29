@@ -1,9 +1,10 @@
-const conn = require("../db/conn");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 class ClientsController {
   async index(req, res, next) {
     try {
-      const fetchClients = await conn.select("*").from("clients");
+      const fetchClients = await prisma.client.findMany();
 
       res.json(fetchClients);
     } catch (error) {
@@ -15,13 +16,13 @@ class ClientsController {
     const data = req.body;
 
     try {
-      const result = await conn("clients").insert(
-        {
+      const result = await prisma.client.create({
+        data: {
           name: data.name,
         },
-        ["*"]
-      );
-      res.json(result[0]);
+      });
+
+      res.json(result);
     } catch (error) {
       next(error);
     }

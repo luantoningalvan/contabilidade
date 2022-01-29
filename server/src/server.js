@@ -1,9 +1,21 @@
 require("dotenv").config();
+
 const express = require("express");
 const routes = require("./routes");
 const cors = require("cors");
+const http = require("http");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 const app = express();
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 const port = process.env.PORT;
 
 app.use(cors());
@@ -17,6 +29,20 @@ app.use("/public", express.static("uploads"));
 
 app.use(routes);
 
-app.listen(port, () => {
+io.on("connection", (socket) => {
+  socket.on("newBarCode", async (msg) => {
+    const findProduct = await prisma.product.findFirst({
+      where: { barCode: msg.data },
+    });
+
+    io.emit("newProductScanned", {
+      code: msg.data,
+      isAssociated: !!findProduct,
+      product: findProduct,
+    });
+  });
+});
+
+server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
