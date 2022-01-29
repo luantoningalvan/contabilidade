@@ -1,4 +1,4 @@
-import { CategoriesProvider } from "./contexts/CategoriesContext";
+import { AppContext } from "./contexts";
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
@@ -9,7 +9,7 @@ import { Records } from "./pages/Records";
 function App() {
   return (
     <ChakraProvider>
-      <CategoriesProvider>
+      <AppContext>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -17,7 +17,7 @@ function App() {
             <Route path="/records" element={<Records />} />
           </Routes>
         </Router>
-      </CategoriesProvider>
+      </AppContext>
     </ChakraProvider>
   );
 }
