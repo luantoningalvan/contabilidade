@@ -52,7 +52,7 @@ export function Home() {
   }
 
   async function handleDelete(id: number) {
-    const confirmExclusion = confirm("Relmente deseja excluir?");
+    const confirmExclusion = window.confirm("Relmente deseja excluir?");
 
     if (confirmExclusion) {
       await api.delete(`/units/${id}`);

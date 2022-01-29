@@ -11,7 +11,7 @@ import {
 import { FiEdit, FiPlus } from "react-icons/fi";
 import { Modal } from "../../components/Modal";
 import { useCategories } from "../../contexts/CategoriesContext";
-import { CategoryItem } from "./styles";
+
 interface ConfigureCategoriesProps {
   open: boolean;
   onClose: () => void;

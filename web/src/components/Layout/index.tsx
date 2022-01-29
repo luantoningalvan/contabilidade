@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { FiUsers, FiBarChart, FiBox } from "react-icons/fi";
 import { Box } from "@chakra-ui/react";
 
@@ -36,8 +36,8 @@ export const Layout = (props: LayoutProps) => {
           lineHeight="1.3rem"
           borderBottomWidth={1}
         >
-          <Link href="/" passHref>
-            <img src="./logo.svg" />
+          <Link to="/">
+            <img src="./logo.svg" alt="Logo Natura" />
           </Link>
         </Box>
 
@@ -51,18 +51,18 @@ export const Layout = (props: LayoutProps) => {
           mt={2}
         >
           {links.map((link) => (
-            <Link key={link.url} href={link.url} passHref>
-              <Box
-                textDecor="none"
-                rounded={4}
-                color="gray.700"
-                p={2}
-                _hover={{ bg: "gray.100" }}
-                as="a"
-              >
-                <link.icon size={22} />
-              </Box>
-            </Link>
+            <Box
+              textDecor="none"
+              rounded={4}
+              color="gray.700"
+              key={link.url}
+              to={link.url}
+              as={Link}
+              p={2}
+              _hover={{ bg: "gray.100" }}
+            >
+              <link.icon size={22} />
+            </Box>
           ))}
         </Box>
       </Box>

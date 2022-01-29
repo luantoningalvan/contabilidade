@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import { api } from "../services/api";
-import { Category } from "../containers/Home/types";
+import { Category } from "../pages/Home/types";
 
 type CategoryInput = Omit<Category, "id">;
 

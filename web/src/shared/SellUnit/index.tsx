@@ -2,7 +2,7 @@ import * as React from "react";
 import { VStack, Input, Heading } from "@chakra-ui/react";
 import { Modal } from "../../components/Modal";
 import { api } from "../../services/api";
-import { Unit } from "../../containers/Home/types";
+import { Unit } from "../../pages/Home/types";
 
 interface SellUnitProps {
   open: boolean;
