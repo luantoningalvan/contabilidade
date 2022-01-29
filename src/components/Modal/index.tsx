@@ -50,7 +50,7 @@ export function Modal(props: ModalProps) {
                 {footer.secondary.text}
               </Button>
             )}
-            <Button colorScheme="blue" onClick={footer?.primary.onClick}>
+            <Button colorScheme="purple" onClick={footer?.primary.onClick}>
               {footer?.primary.text}
             </Button>
           </ModalFooter>
