@@ -72,7 +72,7 @@ class UnitsController {
               product_id: Number(product.product),
               purchase_price: product.price,
               category_id: product.category,
-              expiration_date: product.expiration_date,
+              expiration_date: new Date(product.expiration_date),
               sold: false,
             })
           )
