@@ -57,14 +57,21 @@ class UnitsController {
     const data = req.body;
 
     try {
-      const dataToInsert = Array(data.quantity)
-        .fill(1)
-        .map(() => ({
-          product_id: data.product,
-          purchase_price: data.price,
-          category_id: data.category,
-          sold: false,
-        }));
+      const dataToInsert = [];
+
+      data.products.forEach((product) =>
+        Array(product.quantity)
+          .fill(1)
+          .forEach(() =>
+            dataToInsert.push({
+              product_id: Number(product.product),
+              purchase_price: product.price,
+              category_id: product.category,
+              expiration_date: product.expiration_date,
+              sold: false,
+            })
+          )
+      );
 
       const results = await prisma.unity.createMany({
         data: dataToInsert,

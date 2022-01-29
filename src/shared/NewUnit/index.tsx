@@ -1,11 +1,10 @@
 import * as React from "react";
-import { Input, Stack } from "@chakra-ui/react";
+import { Input, Stack, Select } from "@chakra-ui/react";
 import { Modal } from "../../components/Modal";
 import { api } from "../../services/api";
 import io, { Socket } from "socket.io-client";
-import { Select } from "chakra-react-select";
 import { AssociateProduct } from "./associateProduct";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 
 interface NewUnitProps {
   open: boolean;
@@ -21,8 +20,59 @@ export function NewUnit(props: NewUnitProps) {
   const [associateProduct, setAssociateProducts] = React.useState<
     null | string
   >(null);
-  const [selectedProduct, setSelectedProduct] = React.useState(null);
-  const { register, handleSubmit, setValue } = useForm();
+
+  const { register, handleSubmit, setValue, control, getValues } = useForm({
+    defaultValues: {
+      products: [
+        {
+          product: undefined,
+          quantity: undefined,
+          price: undefined,
+          expiration_date: undefined,
+        },
+      ],
+    },
+  });
+
+  const { fields, append } = useFieldArray({
+    control,
+    name: "products",
+  });
+
+  const includeUnity = (data) => {
+    const values = getValues();
+
+    const findSameProduct = values.products.findIndex(
+      (field) => Number(field.product) === data.product.id
+    );
+
+    if (!values.products[0].product) {
+      return setValue(`products.${0}`, {
+        quantity: 1,
+        expiration_date: undefined,
+        price: data.product.original_price,
+        product: data.product.id,
+      });
+    }
+
+    if (findSameProduct !== -1) {
+      setValue(`products.${findSameProduct}`, {
+        ...values.products[findSameProduct],
+        quantity: values.products[findSameProduct].quantity + 1,
+      });
+      console.log({
+        ...values.products[findSameProduct],
+        quantity: values.products[findSameProduct].quantity + 1,
+      });
+    } else {
+      append({
+        quantity: 1,
+        expiration_date: undefined,
+        price: data.product.original_price,
+        product: data.product.id,
+      });
+    }
+  };
 
   React.useEffect(() => {
     const socket = io("http://127.0.0.1:3333");
@@ -37,12 +87,7 @@ export function NewUnit(props: NewUnitProps) {
 
     socket.on("newProductScanned", (data) => {
       if (data.isAssociated) {
-        setValue("quantity", 1);
-        setValue("price", data.product.original_price);
-        setSelectedProduct({
-          label: data.product.name,
-          value: data.product.id,
-        });
+        includeUnity(data);
       } else {
         setAssociateProducts(data.code);
       }
@@ -69,12 +114,14 @@ export function NewUnit(props: NewUnitProps) {
 
   const onSubmit = async (data) => {
     try {
-      console.log(selectedProduct);
       await api.post("/units", {
-        product: selectedProduct.value,
-        price: Number(data.price),
-        quantity: Number(data.quantity),
-        category: category,
+        products: data.products.map((product) => ({
+          product: product.product,
+          expiration_date: product.expiration_date,
+          price: Number(product.price),
+          quantity: Number(product.quantity),
+          category: category,
+        })),
       });
 
       typeof afterSubmit === "function" && afterSubmit();
@@ -101,27 +148,44 @@ export function NewUnit(props: NewUnitProps) {
         }}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction="row" spacing={2}>
-            <div style={{ width: "100%" }}>
-              <Select
-                options={products}
-                placeholder="Produto"
-                onChange={(v) => setSelectedProduct(v)}
-                value={selectedProduct}
-              />
-            </div>
-            <Input
-              label="Quantidade"
-              type="number"
-              placeholder="Quantidade"
-              {...register("quantity", { valueAsNumber: true })}
-            />
-            <Input
-              label="Valor"
-              fullWidth
-              placeholder="Valor"
-              {...register("price", { valueAsNumber: true })}
-            />
+          <Stack>
+            {fields.map((field, index) => (
+              <Stack key={field.id} direction="row" spacing={2}>
+                <Select
+                  flex={4}
+                  placeholder="Selecione o produto"
+                  {...register(`products.${index}.product`)}
+                >
+                  {products.map((product) => (
+                    <option key={product.value} value={product.value}>
+                      {product.label}
+                    </option>
+                  ))}
+                </Select>
+                <Input
+                  type="number"
+                  placeholder="Qnt."
+                  flex={1}
+                  {...register(`products.${index}.quantity`, {
+                    valueAsNumber: true,
+                  })}
+                />
+                <Input
+                  fullWidth
+                  placeholder="Valor"
+                  flex={1}
+                  {...register(`products.${index}.price`, {
+                    valueAsNumber: true,
+                  })}
+                />
+                <Input
+                  type="date"
+                  placeholder="Data vencimento"
+                  flex={2}
+                  {...register(`products.${index}.expiration_date`)}
+                />
+              </Stack>
+            ))}
           </Stack>
         </form>
       </Modal>
@@ -130,14 +194,7 @@ export function NewUnit(props: NewUnitProps) {
           open={!!associateProduct}
           onClose={() => setAssociateProducts(null)}
           barCode={associateProduct}
-          afterSubmit={(data) => {
-            setValue("quantity", 1);
-            setValue("price", data.original_price);
-            setSelectedProduct({
-              label: data.name,
-              value: data.id,
-            });
-          }}
+          afterSubmit={(data) => includeUnity(data)}
         />
       )}
     </>
