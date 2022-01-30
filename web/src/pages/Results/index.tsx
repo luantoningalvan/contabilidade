@@ -14,45 +14,95 @@ import {
   Tbody,
   Td,
   Tr,
+  Image,
 } from "@chakra-ui/react";
+import React from "react";
 import ReactApexChart from "react-apexcharts";
+import { FiArrowDown, FiArrowUp, FiDollarSign, FiUsers } from "react-icons/fi";
+import { IconBaseProps } from "react-icons";
 import { Layout } from "../../components/Layout";
 import { formatToBrl } from "../../utils/formatToBrl";
+
+interface InfoCardProps {
+  title: string;
+  value: string;
+  icon: React.FC<IconBaseProps>;
+  iconColor: string;
+  iconBg: string;
+}
+
+const InfoCard = (props: InfoCardProps) => (
+  <Box
+    p={4}
+    py={6}
+    borderWidth={1}
+    rounded={4}
+    display="flex"
+    w="full"
+    justifyContent="space-between"
+    alignItems="center"
+  >
+    <Box>
+      <Text fontSize="md" color="gray.600">
+        {props.title}
+      </Text>
+      <Heading size="lg" color="gray.900">
+        {props.value}
+      </Heading>
+    </Box>
+    <Box color={props.iconColor} bg={props.iconBg} p={2} rounded="full">
+      <props.icon size={40} />
+    </Box>
+  </Box>
+);
 
 export function Results() {
   return (
     <Layout>
-      <Grid p={8} gap={8} templateColumns="repeat(8, 1fr)">
+      <Grid p={8} gap={4} templateColumns="repeat(8, 1fr)">
         <GridItem colSpan={2}>
-          <Box bg="gray.200" w="full">
-            <Text>Total em vendas</Text>
-            <Heading>{formatToBrl(2700)}</Heading>
-          </Box>
+          <InfoCard
+            title="Total em vendas"
+            value={"R$ 5.000"}
+            icon={FiArrowUp}
+            iconBg="green.100"
+            iconColor="green.400"
+          />
         </GridItem>
         <GridItem colSpan={2}>
-          <Box bg="gray.200" w="full">
-            <Text>Lucro</Text>
-            <Heading>{formatToBrl(12956)}</Heading>
-          </Box>
+          <InfoCard
+            title="Lucro"
+            value={"R$ 3.200"}
+            icon={FiDollarSign}
+            iconBg="yellow.100"
+            iconColor="yellow.500"
+          />
         </GridItem>
         <GridItem colSpan={2}>
-          <Box bg="gray.200" w="full">
-            <Text>Total a receber</Text>
-            <Heading>{formatToBrl(12956)}</Heading>
-          </Box>
+          <InfoCard
+            title="Total a receber"
+            value={"R$ 1.230"}
+            icon={FiArrowDown}
+            iconBg="blue.100"
+            iconColor="blue.400"
+          />
         </GridItem>
         <GridItem colSpan={2}>
-          <Box bg="gray.200" w="full">
-            <Text>Novos clientes</Text>
-            <Heading>+ 23</Heading>
-          </Box>
+          <InfoCard
+            title="Total de clientes"
+            value={"174"}
+            icon={FiUsers}
+            iconBg="red.100"
+            iconColor="red.400"
+          />
         </GridItem>
         <GridItem colSpan={4}>
-          <Box bg="gray.200" w="full">
-            <Heading size="md">Total de vendas por mês</Heading>
-
+          <Box w="full" borderWidth={1} rounded={4} h={350}>
+            <Heading size="md" color="gray.700" p={4}>
+              Total de vendas por mês
+            </Heading>
             <ReactApexChart
-              height={310}
+              height={270}
               options={{
                 chart: {
                   type: "line",
@@ -97,52 +147,42 @@ export function Results() {
           </Box>
         </GridItem>
         <GridItem colSpan={2}>
-          <Box bg="gray.200" w="full">
-            <Heading size="md">Maiores compradores</Heading>
-
-            <Stack>
-              <Flex p={2} gap={2} alignItems="center">
-                <Heading size="lg">1</Heading>
-                <Avatar size="sm" />
-                <Text>{formatToBrl(1100)}</Text>
-              </Flex>
-              <Divider />
-              <Flex p={2} gap={2} alignItems="center">
-                <Heading size="lg">2</Heading>
-                <Avatar size="sm" />
-                <Text>{formatToBrl(1100)}</Text>
-              </Flex>
-              <Divider />
-              <Flex p={2} gap={2} alignItems="center">
-                <Heading size="lg">3</Heading>
-                <Avatar size="sm" />
-                <Text>{formatToBrl(1100)}</Text>
-              </Flex>
-              <Divider />
-              <Flex p={2} gap={2} alignItems="center">
-                <Heading size="lg">4</Heading>
-                <Avatar size="sm" />
-                <Text>{formatToBrl(1100)}</Text>
-              </Flex>
-              <Divider />
-              <Flex p={2} gap={2} alignItems="center">
-                <Heading size="lg">5</Heading>
-                <Avatar size="sm" />
-                <Text>{formatToBrl(1100)}</Text>
-              </Flex>
+          <Box w="full" borderWidth={1} rounded={4} h={350}>
+            <Heading size="md" color="gray.700" p={4}>
+              Maiores compradores
+            </Heading>
+            <Stack mb={4} mt={2} spacing={3}>
+              {Array(5)
+                .fill(1)
+                .map((_, i) => (
+                  <>
+                    <Flex px={4} alignItems="center">
+                      <Heading size="md">{i + 1}</Heading>
+                      <Avatar size="sm" ml={4} mr={6} />
+                      <Text fontSize="lg">{formatToBrl(1100)}</Text>
+                    </Flex>
+                    {i < 4 && <Divider />}
+                  </>
+                ))}
             </Stack>
           </Box>
         </GridItem>
         <GridItem colSpan={2}>
-          <Box bg="gray.200" w="full">
-            <Heading size="md">Percentual de lucro</Heading>
+          <Box w="full" borderWidth={1} rounded={4} h={350}>
+            <Heading size="md" color="gray.700" p={4}>
+              Percentual de lucro
+            </Heading>
             <ReactApexChart
+              height={300}
               options={{
                 chart: {
-                  width: 380,
                   type: "pie",
                 },
                 legend: { show: false },
+                stroke: {
+                  show: false,
+                },
+                labels: ["Vendas", "Lucro"],
               }}
               series={[60, 40]}
               type="pie"
@@ -151,9 +191,11 @@ export function Results() {
         </GridItem>
 
         <GridItem colSpan={4}>
-          <Box bg="gray.200" w="full">
-            <Heading size="md">Produtos mais vendidos</Heading>
-            <Table>
+          <Box w="full" borderWidth={1} rounded={4}>
+            <Heading size="md" color="gray.700" p={4}>
+              Produtos mais vendidos
+            </Heading>
+            <Table size="sm">
               <Thead>
                 <Th>#</Th>
                 <Th>Produto</Th>
@@ -161,49 +203,34 @@ export function Results() {
                 <Th>Lucro</Th>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Perfume 02</Td>
-                  <Td>14 un.</Td>
-                  <Td>{formatToBrl(230)}</Td>
-                </Tr>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Perfume 02</Td>
-                  <Td>14 un.</Td>
-                  <Td>{formatToBrl(230)}</Td>
-                </Tr>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Perfume 02</Td>
-                  <Td>14 un.</Td>
-                  <Td>{formatToBrl(230)}</Td>
-                </Tr>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Perfume 02</Td>
-                  <Td>14 un.</Td>
-                  <Td>{formatToBrl(230)}</Td>
-                </Tr>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Perfume 02</Td>
-                  <Td>14 un.</Td>
-                  <Td>{formatToBrl(230)}</Td>
-                </Tr>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>Perfume 02</Td>
-                  <Td>14 un.</Td>
-                  <Td>{formatToBrl(230)}</Td>
-                </Tr>
+                {Array(5)
+                  .fill(1)
+                  .map((_, i) => (
+                    <Tr>
+                      <Td w={10}>
+                        <Heading size="md">{i + 1}</Heading>
+                      </Td>
+                      <Td display="flex" alignItems="center">
+                        <Image
+                          h="48px"
+                          w="48px"
+                          src="http://localhost:3333/public/thumb-76420.jpg"
+                        />
+                        Produto {i + 1}
+                      </Td>
+                      <Td>{i + 10} un.</Td>
+                      <Td>{formatToBrl((i + 1) * 100)}</Td>
+                    </Tr>
+                  ))}
               </Tbody>
             </Table>
           </Box>
         </GridItem>
         <GridItem colSpan={4}>
-          <Box bg="gray.200" w="full">
-            <Heading size="md">Vendas por categoria</Heading>
+          <Box w="full" borderWidth={1} rounded={4}>
+            <Heading size="md" color="gray.700" px={4} pt={4}>
+              Vendas por categoria
+            </Heading>
             <ReactApexChart
               options={{
                 chart: {
@@ -215,6 +242,7 @@ export function Results() {
                   bar: {
                     borderRadius: 4,
                     horizontal: true,
+                    barHeight: "50px",
                   },
                 },
                 dataLabels: {
@@ -232,10 +260,12 @@ export function Results() {
                     "Rosto",
                     "Infantil",
                   ],
+                  labels: { show: false },
                 },
               }}
               series={[
                 {
+                  name: "Vendas",
                   data: [400, 430, 448, 470, 580, 690, 1100, 1200, 1380],
                 },
               ]}
