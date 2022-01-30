@@ -203,6 +203,7 @@ export function Home() {
                   align: "right",
                   width: 160,
                 },
+                { label: "Vencimento", name: "expiration_date" },
                 {
                   label: "Vendido",
                   name: "sold",
