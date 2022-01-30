@@ -8,6 +8,7 @@ class ProductsController {
     try {
       const fetchProducts = await prisma.product.findMany({
         include: { _count: { select: { units: true } } },
+        orderBy: { name: "asc" },
       });
 
       res.json(

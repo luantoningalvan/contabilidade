@@ -4,7 +4,9 @@ const prisma = new PrismaClient();
 class ClientsController {
   async index(req, res, next) {
     try {
-      const fetchClients = await prisma.client.findMany();
+      const fetchClients = await prisma.client.findMany({
+        orderBy: { name: "asc" },
+      });
 
       res.json(fetchClients);
     } catch (error) {
