@@ -30,7 +30,7 @@ import { HiViewGrid } from "react-icons/hi";
 import { Category, Filters } from "./types";
 import { Modal } from "../../components/Modal";
 import { useCategories } from "../../contexts/CategoriesContext";
-import { ConfigureCategories } from "../../shared/ConfigureCategories";
+import { ConfigureCategories } from "../../shared/categories/ConfigureCategories";
 
 interface FilterProps {
   filters: Filters;

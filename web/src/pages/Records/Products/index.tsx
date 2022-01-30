@@ -12,8 +12,8 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FiPlus, FiSearch } from "react-icons/fi";
-import { NewProduct } from "../../../shared/NewProduct";
-import { ViewProduct } from "../../../shared/ViewProduct";
+import { NewProduct } from "../../../shared/products/NewProduct";
+import { ViewProduct } from "../../../shared/products/ViewProduct";
 type Product = {
   id: number;
   name: string;

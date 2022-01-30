@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Input, Stack, Select } from "@chakra-ui/react";
-import { Modal } from "../../components/Modal";
-import { api } from "../../services/api";
+import { Modal } from "../../../components/Modal";
+import { api } from "../../../services/api";
 import io, { Socket } from "socket.io-client";
 import { AssociateProduct } from "./associateProduct";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -39,7 +39,7 @@ export function NewUnit(props: NewUnitProps) {
     name: "products",
   });
 
-  const includeUnity = (data) => {
+  const includeUnit = (data) => {
     const values = getValues();
 
     const findSameProduct = values.products.findIndex(
@@ -87,7 +87,7 @@ export function NewUnit(props: NewUnitProps) {
 
     socket.on("newProductScanned", (data) => {
       if (data.isAssociated) {
-        includeUnity(data);
+        includeUnit(data);
       } else {
         setAssociateProducts(data.code);
       }
@@ -194,7 +194,7 @@ export function NewUnit(props: NewUnitProps) {
           open={!!associateProduct}
           onClose={() => setAssociateProducts(null)}
           barCode={associateProduct}
-          afterSubmit={(data) => includeUnity(data)}
+          afterSubmit={(data) => includeUnit(data)}
         />
       )}
     </>

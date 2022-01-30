@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Modal } from "../../components/Modal";
+import { Modal } from "../../../components/Modal";
 import {
-  Stack,
   Tab,
   Table,
   TabList,
@@ -14,9 +13,9 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { api } from "../../services/api";
+import { api } from "../../../services/api";
 import { FiCheckCircle } from "react-icons/fi";
-import { formatToBrl } from "../../utils/formatToBrl";
+import { formatToBrl } from "../../../utils/formatToBrl";
 
 interface ViewProdutoProps {
   open: boolean;

@@ -9,8 +9,8 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { FiEdit, FiPlus } from "react-icons/fi";
-import { Modal } from "../../components/Modal";
-import { useCategories } from "../../contexts/CategoriesContext";
+import { Modal } from "../../../components/Modal";
+import { useCategories } from "../../../contexts/CategoriesContext";
 
 interface ConfigureCategoriesProps {
   open: boolean;

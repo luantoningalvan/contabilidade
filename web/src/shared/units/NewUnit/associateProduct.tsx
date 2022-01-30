@@ -1,11 +1,9 @@
 import * as React from "react";
-import { Input, Text, Stack, useToast } from "@chakra-ui/react";
-import { Modal } from "../../components/Modal";
-import { api } from "../../services/api";
-import io, { Socket } from "socket.io-client";
-import { Select, CreatableSelect } from "chakra-react-select";
-import { NewProduct } from "../NewProduct";
-import { useForm } from "react-hook-form";
+import { Text, Stack, useToast } from "@chakra-ui/react";
+import { Modal } from "../../../components/Modal";
+import { api } from "../../../services/api";
+import { CreatableSelect } from "chakra-react-select";
+import { NewProduct } from "../../products/NewProduct";
 
 interface NewUnitProps {
   open: boolean;
@@ -13,12 +11,6 @@ interface NewUnitProps {
   barCode: string;
   afterSubmit?: (data: any) => void;
 }
-
-const DATA_INITIAL_STATE = {
-  product: null,
-  quantity: 1,
-  price: null,
-};
 
 export function AssociateProduct(props: NewUnitProps) {
   const { onClose, open, afterSubmit, barCode } = props;

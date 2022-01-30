@@ -1,20 +1,14 @@
 import * as React from "react";
-import { Modal } from "../../components/Modal";
+import { Modal } from "../../../components/Modal";
 import { useForm } from "react-hook-form";
 import { Box, Input, Stack, useToast } from "@chakra-ui/react";
-import { api } from "../../services/api";
+import { api } from "../../../services/api";
 
 interface NewProductDialogProps {
   open: boolean;
   onClose: () => void;
   afterSubmit?: (data: any) => void;
 }
-
-const DATA_INITIAL_STATE = {
-  product: null,
-  quantity: 1,
-  price: null,
-};
 
 export function NewProduct(props: NewProductDialogProps) {
   const { onClose, open, afterSubmit } = props;

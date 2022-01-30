@@ -1,8 +1,8 @@
 import * as React from "react";
 import { VStack, Input, Text, Select, useToast } from "@chakra-ui/react";
-import { Modal } from "../../components/Modal";
-import { api } from "../../services/api";
-import { Unit } from "../../pages/Home/types";
+import { Modal } from "../../../components/Modal";
+import { api } from "../../../services/api";
+import { Unit } from "../../../pages/Home/types";
 import { useForm } from "react-hook-form";
 
 interface SellUnitProps {
