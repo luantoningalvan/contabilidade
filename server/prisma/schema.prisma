@@ -15,17 +15,17 @@ model Product {
     barCode        String?
     natCode        String?
     original_price Float?
-    units          Unity[]
+    units          Unit[]
 }
 
 model Category {
-    id    Int     @id @default(autoincrement())
+    id    Int    @id @default(autoincrement())
     name  String
     color String
-    units Unity[]
+    units Unit[]
 }
 
-model Unity {
+model Unit {
     id              Int       @id @default(autoincrement())
     product_id      Int
     product         Product   @relation(fields: [product_id], references: [id])
@@ -41,7 +41,7 @@ model Unity {
 }
 
 model Client {
-    id    Int     @id @default(autoincrement())
+    id    Int    @id @default(autoincrement())
     name  String
-    units Unity[]
+    units Unit[]
 }

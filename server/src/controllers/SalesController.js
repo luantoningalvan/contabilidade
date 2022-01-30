@@ -7,7 +7,7 @@ class SalesController {
     const { id: unit_id } = req.params;
 
     try {
-      const updateUnit = await prisma.unity.update({
+      const updateUnit = await prisma.unit.update({
         where: { id: Number(unit_id) },
         data: {
           client_id: data.client,

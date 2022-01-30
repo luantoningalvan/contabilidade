@@ -7,7 +7,7 @@ class UnitsController {
     try {
       const date = new Date(req.query.period);
 
-      const fetchUnits = await prisma.unity.findMany({
+      const fetchUnits = await prisma.unit.findMany({
         include: {
           client: { select: { name: true } },
           product: { select: { name: true } },
@@ -78,7 +78,7 @@ class UnitsController {
           )
       );
 
-      const results = await prisma.unity.createMany({
+      const results = await prisma.unit.createMany({
         data: dataToInsert,
         skipDuplicates: false,
       });
@@ -92,7 +92,7 @@ class UnitsController {
   async remove(req, res, next) {
     const { id: unit_id } = req.params;
     try {
-      await prisma.unity.delete({ where: { id: Number(unit_id) } });
+      await prisma.unit.delete({ where: { id: Number(unit_id) } });
       res.json({ ok: true });
     } catch (error) {
       next(error);
