@@ -41,7 +41,9 @@ model Unit {
 }
 
 model Client {
-    id    Int    @id @default(autoincrement())
-    name  String
-    units Unit[]
+    id       Int       @id @default(autoincrement())
+    name     String
+    avatar   String?
+    birthday DateTime?
+    units    Unit[]
 }

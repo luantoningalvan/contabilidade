@@ -9,6 +9,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { Products } from "./Products";
+import { Clients } from "./Clients";
 
 export function Records() {
   return (
@@ -33,7 +34,7 @@ export function Records() {
             <Products />
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <Clients />
           </TabPanel>
         </TabPanels>
       </Tabs>
