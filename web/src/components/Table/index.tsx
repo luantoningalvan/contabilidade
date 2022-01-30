@@ -15,6 +15,7 @@ type Action = {
   label: string;
   icon: React.ReactElement;
   onClick: () => void;
+  hide?: boolean;
 };
 
 type Column = {
@@ -54,11 +55,14 @@ export const Table = (props: TableProps) => {
                 renderMenu={() => (
                   <MenuList>
                     {props.contextActions &&
-                      props.contextActions(row).map((act) => (
-                        <MenuItem onClick={act.onClick} icon={act.icon}>
-                          {act.label}
-                        </MenuItem>
-                      ))}
+                      props.contextActions(row).map(
+                        (act) =>
+                          !act.hide && (
+                            <MenuItem onClick={act.onClick} icon={act.icon}>
+                              {act.label}
+                            </MenuItem>
+                          )
+                      )}
                   </MenuList>
                 )}
               >

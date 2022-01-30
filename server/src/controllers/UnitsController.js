@@ -58,6 +58,19 @@ class UnitsController {
     }
   }
 
+  async show(req, res, next) {
+    try {
+      const findUnit = await prisma.unit.findFirst({
+        where: { id: Number(req.params.id) },
+        include: { product: true },
+      });
+
+      res.json(findUnit);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async create(req, res, next) {
     const data = req.body;
 
@@ -84,6 +97,25 @@ class UnitsController {
       });
 
       res.json(results);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async update(req, res, next) {
+    const data = req.body;
+    const { id: unit_id } = req.params;
+
+    try {
+      const updateUnit = await prisma.unit.update({
+        where: { id: Number(unit_id) },
+        data: {
+          purchase_price: data.price,
+          expiration_date: new Date(data.expiration_date),
+        },
+      });
+
+      res.json(updateUnit);
     } catch (error) {
       next(error);
     }

@@ -30,6 +30,7 @@ import { SellUnit } from "../../shared/units/SellUnit";
 import { parseOptions } from "../../utils/parseOptions";
 import { formatToBrl } from "../../utils/formatToBrl";
 import { useConfirmation } from "../../hooks/useConfirmation";
+import { EditUnit } from "../../shared/units/EditUnit";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -103,6 +104,15 @@ export function Home() {
           onClose={() => setAction(null)}
           open={!!action}
           unit={action.unit}
+          afterSubmit={fetchUnits}
+        />
+      )}
+
+      {action !== null && action.type === "edit" && (
+        <EditUnit
+          onClose={() => setAction(null)}
+          open={!!action}
+          unitId={action.unit.id}
           afterSubmit={fetchUnits}
         />
       )}
@@ -221,6 +231,7 @@ export function Home() {
                 {
                   label: "Vender",
                   icon: <FiDollarSign />,
+                  hide: unit.sold,
                   onClick: () => setAction({ type: "sell", unit }),
                 },
                 {
