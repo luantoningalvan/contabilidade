@@ -14,7 +14,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { api } from "../../../services/api";
-import { FiCheckCircle } from "react-icons/fi";
+import { FiCheckSquare } from "react-icons/fi";
 import { formatToBrl } from "../../../utils/formatToBrl";
 
 interface ViewProdutoProps {
@@ -44,7 +44,7 @@ export function ViewProduct(props: ViewProdutoProps) {
       onClose={onClose}
       title={productData?.name}
     >
-      <Tabs variant="enclosed">
+      <Tabs variant="line">
         <TabList>
           <Tab>Gerais</Tab>
           <Tab>Unidades</Tab>
@@ -53,19 +53,27 @@ export function ViewProduct(props: ViewProdutoProps) {
           <TabPanel>
             <img src={productData?.thumb} alt={productData?.name} />
           </TabPanel>
-          <TabPanel>
+          <TabPanel px={0}>
             <Table>
               <Thead>
                 <Th>Preço</Th>
                 <Th>Vencimento</Th>
-                <Th>Vendido</Th>
+                <Th textAlign="center">Vendido</Th>
               </Thead>
               <Tbody>
                 {productData?.units.map((unit) => (
                   <Tr key={unit.id}>
                     <Td>{formatToBrl(unit.purchase_price)}</Td>
                     <Td>{unit.expiration_date}</Td>
-                    <Td>{unit.sold && <FiCheckCircle color="#0f7" />}</Td>
+                    <Td textAlign="center">
+                      {unit.sold && (
+                        <FiCheckSquare
+                          size={18}
+                          color="#188d4f"
+                          style={{ display: "inline-block" }}
+                        />
+                      )}
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>

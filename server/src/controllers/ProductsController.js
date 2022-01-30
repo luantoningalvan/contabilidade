@@ -36,6 +36,12 @@ class ProductsController {
 
       res.json({
         ...findProduct,
+        units: findProduct.units.map((unit) => ({
+          ...unit,
+          expiration_date: new Intl.DateTimeFormat("pt-BR", {
+            timeZone: "UTC",
+          }).format(unit.expiration_date),
+        })),
         thumb: `http://localhost:3333/public/thumb-${findProduct.natCode}.jpg`,
       });
     } catch (error) {
