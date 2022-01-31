@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { FiUsers, FiBarChart, FiBox } from "react-icons/fi";
-import { Box } from "@chakra-ui/react";
+import { Box, Tooltip } from "@chakra-ui/react";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const links = [
-  { url: "/", icon: FiBox },
-  { url: "/results", icon: FiBarChart },
-  { url: "/records", icon: FiUsers },
+  { url: "/", label: "Visão geral", icon: FiBarChart },
+  { url: "/unidades", label: "Unidades", icon: FiBox },
+  { url: "/cadastros", label: "Cadastros", icon: FiUsers },
 ];
 
 export const Layout = (props: LayoutProps) => {
@@ -51,18 +51,20 @@ export const Layout = (props: LayoutProps) => {
           mt={2}
         >
           {links.map((link) => (
-            <Box
-              textDecor="none"
-              rounded={4}
-              color="gray.700"
-              key={link.url}
-              to={link.url}
-              as={Link}
-              p={2}
-              _hover={{ bg: "gray.100" }}
-            >
-              <link.icon size={22} />
-            </Box>
+            <Tooltip fontSize="md" label={link.label} placement="right">
+              <Box
+                textDecor="none"
+                rounded={4}
+                color="gray.700"
+                key={link.url}
+                to={link.url}
+                as={Link}
+                p={2}
+                _hover={{ bg: "gray.100" }}
+              >
+                <link.icon size={22} />
+              </Box>
+            </Tooltip>
           ))}
         </Box>
       </Box>

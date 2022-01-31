@@ -12,9 +12,9 @@ function App() {
       <AppContext>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/records" element={<Records />} />
+            <Route path="/" element={<Results />} />
+            <Route path="/unidades" element={<Home />} />
+            <Route path="/cadastros" element={<Records />} />
           </Routes>
         </Router>
       </AppContext>
