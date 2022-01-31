@@ -14,7 +14,7 @@ import { Clients } from "./Clients";
 export function Records() {
   return (
     <Layout>
-      <Tabs variant="soft-rounded" colorScheme="purple">
+      <Tabs variant="soft-rounded" colorScheme="purple" isLazy>
         <Box
           display="flex"
           alignItems="center"
