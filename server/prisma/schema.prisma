@@ -25,25 +25,39 @@ model Category {
     units Unit[]
 }
 
+model Transaction {
+    id          Int      @id @default(autoincrement())
+    description String
+    value       Float
+    type        Int
+    unit_id     Int?
+    unit        Unit?    @relation(fields: [unit_id], references: [id])
+    client_id   Int?
+    client      Client?  @relation(fields: [client_id], references: [id])
+    created_at  DateTime @default(now())
+}
+
 model Unit {
-    id              Int       @id @default(autoincrement())
+    id              Int           @id @default(autoincrement())
     product_id      Int
-    product         Product   @relation(fields: [product_id], references: [id])
-    sold            Boolean   @default(false)
+    product         Product       @relation(fields: [product_id], references: [id])
+    sold            Boolean       @default(false)
     purchase_price  Float
     sale_price      Float?
     sale_date       DateTime?
     client_id       Int?
-    client          Client?   @relation(fields: [client_id], references: [id])
+    client          Client?       @relation(fields: [client_id], references: [id])
     category_id     Int
-    category        Category  @relation(fields: [category_id], references: [id])
+    category        Category      @relation(fields: [category_id], references: [id])
     expiration_date DateTime?
+    transactions    Transaction[]
 }
 
 model Client {
-    id       Int       @id @default(autoincrement())
-    name     String
-    avatar   String?
-    birthday DateTime?
-    units    Unit[]
+    id           Int           @id @default(autoincrement())
+    name         String
+    avatar       String?
+    birthday     DateTime?
+    units        Unit[]
+    transactions Transaction[]
 }
