@@ -146,7 +146,7 @@ export function Results() {
               series={[
                 {
                   name: "Vendas",
-                  data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 234, 175, 230],
+                  data: data?.salesPerMonth,
                 },
               ]}
               type="line"
@@ -158,19 +158,27 @@ export function Results() {
             <Heading size="md" color="gray.700" p={4}>
               Maiores compradores
             </Heading>
-            <Stack mb={4} mt={2} spacing={3}>
-              {Array(5)
-                .fill(1)
-                .map((_, i) => (
-                  <>
-                    <Flex px={4} alignItems="center">
-                      <Heading size="md">{i + 1}</Heading>
-                      <Avatar size="sm" ml={4} mr={6} />
-                      <Text fontSize="lg">{formatToBrl(1100)}</Text>
-                    </Flex>
-                    {i < 4 && <Divider />}
-                  </>
-                ))}
+            <Stack spacing={2}>
+              {data?.bestClients.map((client, i) => (
+                <>
+                  <Flex px={4} alignItems="center">
+                    <Heading size="md">{i + 1}</Heading>
+                    <Avatar
+                      src={client.client.avatar}
+                      size="sm"
+                      ml={4}
+                      mr={6}
+                    />
+                    <Box>
+                      <Heading size="sm">{client.client.name}</Heading>
+                      <Text color="gray.500" size="sm">
+                        {formatToBrl(client.totalSales)}
+                      </Text>
+                    </Box>
+                  </Flex>
+                  {i < 4 && <Divider />}
+                </>
+              ))}
             </Stack>
           </Box>
         </GridItem>
@@ -189,9 +197,10 @@ export function Results() {
                 stroke: {
                   show: false,
                 },
+                colors: ["#4299e1", "#48bb78"],
                 labels: ["Vendas", "Lucro"],
               }}
-              series={[40, 60]}
+              series={[100 - data?.profitPercentage, data?.profitPercentage]}
               type="pie"
             />
           </Box>
@@ -210,25 +219,24 @@ export function Results() {
                 <Th>Lucro</Th>
               </Thead>
               <Tbody>
-                {Array(5)
-                  .fill(1)
-                  .map((_, i) => (
-                    <Tr>
-                      <Td w={10}>
-                        <Heading size="md">{i + 1}</Heading>
-                      </Td>
-                      <Td display="flex" alignItems="center">
-                        <Image
-                          h="48px"
-                          w="48px"
-                          src="http://localhost:3333/public/thumb-76420.jpg"
-                        />
-                        Produto {i + 1}
-                      </Td>
-                      <Td>{i + 10} un.</Td>
-                      <Td>{formatToBrl((i + 1) * 100)}</Td>
-                    </Tr>
-                  ))}
+                {data?.bestSellers.map((product, i) => (
+                  <Tr>
+                    <Td w={10}>
+                      <Heading size="md">{i + 1}</Heading>
+                    </Td>
+                    <Td display="flex" alignItems="center">
+                      <Image
+                        h="48px"
+                        w="48px"
+                        src={product.product.thumb}
+                        mr={2}
+                      />
+                      {product.product.name}
+                    </Td>
+                    <Td>{product.totalUnits} un.</Td>
+                    <Td>{formatToBrl(product.totalProfit)}</Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           </Box>
@@ -250,30 +258,29 @@ export function Results() {
                     borderRadius: 4,
                     horizontal: true,
                     barHeight: "50px",
+                    distributed: true,
                   },
                 },
+                legend: { show: false },
                 dataLabels: {
                   enabled: false,
                 },
                 xaxis: {
-                  categories: [
-                    "Perfumes",
-                    "Hidratates",
-                    "Cabelos",
-                    "Protetor Solar",
-                    "Cremes antisinais",
-                    "Maquiagem",
-                    "Corpo e banho",
-                    "Rosto",
-                    "Infantil",
-                  ],
+                  categories: data?.salesByCategory.map(
+                    ({ category }) => category.name
+                  ),
                   labels: { show: false },
                 },
+                colors: data?.salesByCategory.map(
+                  ({ category }) => category.color
+                ),
               }}
               series={[
                 {
                   name: "Vendas",
-                  data: [400, 430, 448, 470, 580, 690, 1100, 1200, 1380],
+                  data: data?.salesByCategory.map(
+                    ({ totalSales }) => totalSales
+                  ),
                 },
               ]}
               type="bar"
