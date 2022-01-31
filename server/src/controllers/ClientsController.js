@@ -13,7 +13,9 @@ class ClientsController {
       res.json(
         fetchClients.map((client) => ({
           ...client,
-          avatar: `http://localhost:3333/public/avatars/${client.avatar}`,
+          avatar:
+            client.avatar &&
+            `http://localhost:3333/public/avatars/${client.avatar}`,
         }))
       );
     } catch (error) {
