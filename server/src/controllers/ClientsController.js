@@ -23,6 +23,32 @@ class ClientsController {
     }
   }
 
+  async show(req, res, next) {
+    try {
+      const findClient = await prisma.client.findFirst({
+        where: { id: Number(req.params.id) },
+        include: {
+          units: true,
+          transactions: { orderBy: { created_at: "desc" } },
+        },
+      });
+
+      const calculateDebs = findClient.transactions.reduce((prev, curr) => {
+        return curr.type === 1 ? prev + curr.value : prev - curr.value;
+      }, 0);
+
+      res.json({
+        ...findClient,
+        avatar:
+          findClient.avatar &&
+          `http://localhost:3333/public/avatars/${findClient.avatar}`,
+        debts: calculateDebs,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async create(req, res, next) {
     const data = req.body;
 
