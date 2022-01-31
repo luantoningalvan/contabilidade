@@ -1,14 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const fs = require("fs");
+const Jimp = require("jimp");
 
-const extesions = {
-  "/": "jpg",
-  i: "png",
-  R: "gif",
-  U: "webp",
-  P: "svg",
-};
 class ClientsController {
   async index(req, res, next) {
     try {
@@ -34,16 +28,18 @@ class ClientsController {
       let avatar;
 
       if (req.body.avatar) {
-        const base64 = req.body.avatar.replace(/^data:image\/png;base64,/, "");
-        const extension = base64.charAt(0);
+        const base64 = req.body.avatar.split(",")[1];
+        const imageName = (Math.random() + 1).toString(36).substring(7);
 
-        const imageName = `${(Math.random() + 1).toString(36).substring(7)}.${
-          extesions[extension]
-        }`;
+        Jimp.read(Buffer.from(base64, "base64"), (err, photo) => {
+          if (err) throw err;
+          photo
+            .resize(256, 256)
+            .quality(60)
+            .write(`uploads/avatars/${imageName}.png`); // save
+        });
 
-        fs.writeFileSync(`uploads/avatars/${imageName}`, base64, "base64");
-
-        avatar = imageName;
+        avatar = `${imageName}.png`;
       }
 
       const result = await prisma.client.create({
