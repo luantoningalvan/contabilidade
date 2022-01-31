@@ -16,12 +16,13 @@ import {
   Tr,
   Image,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { FiArrowDown, FiArrowUp, FiDollarSign, FiUsers } from "react-icons/fi";
 import { IconBaseProps } from "react-icons";
 import { Layout } from "../../components/Layout";
 import { formatToBrl } from "../../utils/formatToBrl";
+import { api } from "../../services/api";
 
 interface InfoCardProps {
   title: string;
@@ -57,13 +58,19 @@ const InfoCard = (props: InfoCardProps) => (
 );
 
 export function Results() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    api.get("/dashboard").then((res) => setData(res.data));
+  }, []);
+
   return (
     <Layout>
       <Grid p={8} gap={4} templateColumns="repeat(8, 1fr)">
         <GridItem colSpan={2}>
           <InfoCard
             title="Total em vendas"
-            value={"R$ 5.000"}
+            value={formatToBrl(data?.totalSales)}
             icon={FiArrowUp}
             iconBg="green.100"
             iconColor="green.400"
@@ -72,7 +79,7 @@ export function Results() {
         <GridItem colSpan={2}>
           <InfoCard
             title="Lucro"
-            value={"R$ 3.200"}
+            value={formatToBrl(data?.totalProfit)}
             icon={FiDollarSign}
             iconBg="yellow.100"
             iconColor="yellow.500"
@@ -81,7 +88,7 @@ export function Results() {
         <GridItem colSpan={2}>
           <InfoCard
             title="Total a receber"
-            value={"R$ 1.230"}
+            value={formatToBrl(data?.totalReceivable)}
             icon={FiArrowDown}
             iconBg="blue.100"
             iconColor="blue.400"
@@ -90,7 +97,7 @@ export function Results() {
         <GridItem colSpan={2}>
           <InfoCard
             title="Total de clientes"
-            value={"174"}
+            value={data?.totalClients}
             icon={FiUsers}
             iconBg="red.100"
             iconColor="red.400"
@@ -184,7 +191,7 @@ export function Results() {
                 },
                 labels: ["Vendas", "Lucro"],
               }}
-              series={[60, 40]}
+              series={[40, 60]}
               type="pie"
             />
           </Box>
