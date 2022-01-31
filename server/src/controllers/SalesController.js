@@ -15,6 +15,17 @@ class SalesController {
           sold: true,
           sale_date: new Date(),
         },
+        include: { product: true },
+      });
+
+      await prisma.transaction.create({
+        data: {
+          description: updateUnit.product.name,
+          type: 2,
+          value: data.sale_price,
+          client_id: data.client,
+          unit_id: Number(unit_id),
+        },
       });
 
       res.json(updateUnit);
