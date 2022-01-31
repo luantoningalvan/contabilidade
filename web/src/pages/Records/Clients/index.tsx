@@ -6,15 +6,13 @@ import {
   Button,
   SimpleGrid,
   Input,
-  Text,
   InputLeftElement,
   InputGroup,
-  Image,
   Avatar,
 } from "@chakra-ui/react";
 import { FiPlus, FiSearch } from "react-icons/fi";
 import { NewClient } from "../../../shared/clients/NewClient";
-// import { ViewClient } from "../../../shared/clients/ViewClient";
+import { ViewClient } from "../../../shared/clients/ViewClient";
 
 type Client = {
   id: number;
@@ -26,7 +24,7 @@ type Client = {
 export function Clients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [newClientDialog, setNewClientDialog] = useState(false);
-  //const [viewClientDialog, setViewClientDialog] = useState<null | number>(null);
+  const [viewClientDialog, setViewClientDialog] = useState<null | number>(null);
 
   const fetchClients = useCallback(() => {
     api.get("clients").then((res) => {
@@ -48,13 +46,13 @@ export function Clients() {
         />
       )}
 
-      {/* {viewClientDialog && (
+      {viewClientDialog && (
         <ViewClient
           open={!!viewClientDialog}
           onClose={() => setViewClientDialog(null)}
           clientId={viewClientDialog}
         />
-      )} */}
+      )}
 
       <div>
         <Box display="flex" justifyContent="space-between">
@@ -85,9 +83,9 @@ export function Clients() {
               p={4}
               rounded={6}
               cursor="pointer"
-              // onClick={() => setViewClientDialog(client.id)}
+              onClick={() => setViewClientDialog(client.id)}
             >
-              <Avatar size="lg" src={client.avatar} />
+              <Avatar size="xl" src={client.avatar} />
 
               <Heading size="sm" noOfLines={2} mt={2}>
                 {client.name}
