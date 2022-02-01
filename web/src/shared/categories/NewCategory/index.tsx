@@ -1,4 +1,4 @@
-import { Input, VStack } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, Stack, VStack } from "@chakra-ui/react";
 import * as React from "react";
 import { Modal } from "../../../components/Modal";
 import { useCategories } from "../../../contexts/CategoriesContext";
@@ -37,21 +37,27 @@ export function NewCategory(props: NewCategoryProps) {
         },
       }}
     >
-      <VStack container spacing={2}>
-        <Input
-          name="name"
-          value={data.name}
-          onChange={handleChange}
-          fullWidth
-        />
-        <Input
-          name="color"
-          value={data.color}
-          onChange={handleChange}
-          type="color"
-          fullWidth
-        />
-      </VStack>
+      <Stack spacing={2}>
+        <FormControl>
+          <FormLabel htmlFor="name-field">Nome da categoria</FormLabel>
+          <Input
+            name="name"
+            value={data.name}
+            onChange={handleChange}
+            fullWidth
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="name-field">Cor da categoria</FormLabel>
+          <Input
+            name="color"
+            value={data.color}
+            onChange={handleChange}
+            type="color"
+            fullWidth
+          />
+        </FormControl>
+      </Stack>
     </Modal>
   );
 }
