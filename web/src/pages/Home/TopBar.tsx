@@ -207,7 +207,7 @@ export function TopBar(props: FilterProps) {
                 width="auto"
               />
             </InputGroup>
-            {filters.status === 1 && (
+            {filters.status === 2 && (
               <div>
                 {filters.period && (
                   <Button
@@ -240,9 +240,9 @@ export function TopBar(props: FilterProps) {
                   setFilters({ ...filters, status: Number(e.target.value) })
                 }
               >
-                <option value={null}>Todos</option>
-                <option value={1}>Vendidos</option>
-                <option value={0}>Não vendidos</option>
+                <option value={0}>Todos</option>
+                <option value={2}>Vendidos</option>
+                <option value={1}>Não vendidos</option>
               </Select>
             </FormControl>
             <IconButton

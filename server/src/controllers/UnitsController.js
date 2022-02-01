@@ -20,7 +20,7 @@ class UnitsController {
             },
           }),
           ...(req.query.cat && { category_id: Number(req.query.cat) }),
-          ...(req.query.status && { sold: req.query.status === "1" }),
+          ...(req.query.status && { sold: req.query.status === "2" }),
           ...(req.query.status &&
             req.query.period && {
               AND: [{ sale_date: { lte: date } }, { sale_date: { gte: date } }],
