@@ -277,7 +277,11 @@ export function Home() {
                 ) : (
                   <EmptyState
                     icon={FiBox}
-                    title="Nenhuma unidade nesta categoria"
+                    title={
+                      Object.values(filters).filter((v) => !!v).length > 0
+                        ? "Nenhuma unidade que corresponda aos filtros"
+                        : "Nenhuma unidade nesta categoria"
+                    }
                     description="Cadastre uma unidade clicando no botão + "
                   />
                 )}
