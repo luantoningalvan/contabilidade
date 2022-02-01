@@ -162,6 +162,15 @@ export function Home() {
                 <Stack spacing={2}>
                   <Box borderWidth={1} p={4} rounded={4}>
                     <Box display="flex" gap={2} color="gray.500">
+                    <Text>Quantidade</Text>
+                    <FiBox size={20} />
+                  </Box>
+                  <Heading size="lg" color="gray.700">
+                    {units.data.length} un.
+                  </Heading>
+                </Box>
+                <Box borderWidth={1} p={4} rounded={4}>
+                  <Box display="flex" gap={2} color="gray.500">
                       <Text>Compras</Text>
                       <FiArrowDown size={20} />
                     </Box>
