@@ -220,7 +220,7 @@ export function TopBar(props: FilterProps) {
                   </Button>
                 )}
                 <Button
-                  endIcon={<FiCalendar />}
+                  rightIcon={<FiCalendar />}
                   onClick={() => setPeriodModal(true)}
                 >
                   {filters.period
