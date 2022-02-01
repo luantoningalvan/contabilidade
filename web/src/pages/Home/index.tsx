@@ -149,7 +149,6 @@ export function Home() {
               <FiPlus size={32} color="white" />
             </chakra.button>
 
-            <Slide in={totalizers}>
               <Box
                 borderLeftWidth={1}
                 p={3}
@@ -157,6 +156,8 @@ export function Home() {
                 w="240px"
                 pos="fixed"
                 right={0}
+              transform={totalizers ? "translateX(0px)" : "translateX(240px)"}
+              transition="transform 0.3s ease-in-out"
               >
                 <Stack spacing={2}>
                   <Box borderWidth={1} p={4} rounded={4}>
@@ -188,11 +189,10 @@ export function Home() {
                   </Box>
                 </Stack>
               </Box>
-            </Slide>
 
             <div
               style={{
-                transition: "width 0.5s",
+                transition: "width 0.3s ease-in-out",
                 width: totalizers ? "calc(100% - 240px)" : "100%",
               }}
             >
