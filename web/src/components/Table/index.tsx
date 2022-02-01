@@ -33,7 +33,7 @@ interface TableProps {
 
 export const Table = (props: TableProps) => {
   return (
-    <ChakraTable stickyHeader variant="striped" size="sm">
+    <ChakraTable variant="striped" size="sm">
       <Thead>
         <Tr>
           {props.columns.map((col) => (

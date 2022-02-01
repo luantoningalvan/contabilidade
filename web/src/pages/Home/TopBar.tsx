@@ -86,8 +86,6 @@ export function PeriodModal(props: {
         <Grid item xs={6}>
           <FormControl fullWidth>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
               label="Mês"
               value={period.month}
               onChange={(e) =>
@@ -105,8 +103,6 @@ export function PeriodModal(props: {
         <Grid item xs={6}>
           <FormControl fullWidth>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
               label="Ano"
               value={period.year}
               onChange={(e) =>
@@ -221,8 +217,6 @@ export function TopBar(props: FilterProps) {
             )}
             <FormControl size="small" style={{ minWidth: 200 }}>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
                 label="Situação"
                 value={filters.status}
                 onChange={(e) =>
