@@ -160,7 +160,15 @@ export function TopBar(props: FilterProps) {
           borderBottomWidth={1}
         >
           <Menu>
-            <MenuButton as={Button} variant="outline" leftIcon={<HiViewGrid />}>
+            <MenuButton
+              bg={currentCategory?.color}
+              _hover={{ filter: "brightness(1.1)" }}
+              _active={{ filter: "brightness(1.2)" }}
+              color="white"
+              as={Button}
+              variant="outline"
+              leftIcon={<HiViewGrid />}
+            >
               {currentCategory?.name}
             </MenuButton>
             <MenuList>
