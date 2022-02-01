@@ -8,6 +8,7 @@ import {
   Stack,
   Slide,
   useToast,
+  Button,
 } from "@chakra-ui/react";
 import {
   FiPlus,
@@ -16,6 +17,7 @@ import {
   FiCheckSquare,
   FiEdit,
   FiTrash,
+  FiFolder,
 } from "react-icons/fi";
 import { api } from "../../services/api";
 import { Category, Unit } from "./types";
@@ -31,6 +33,7 @@ import { parseOptions } from "../../utils/parseOptions";
 import { formatToBrl } from "../../utils/formatToBrl";
 import { useConfirmation } from "../../hooks/useConfirmation";
 import { EditUnit } from "../../shared/units/EditUnit";
+import { NewCategory } from "../../shared/categories/NewCategory";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -49,6 +52,7 @@ export function Home() {
   const [filters, setFilters] = React.useState({});
   const [totalizers, setTotalizers] = React.useState(false);
   const confirmation = useConfirmation();
+  const [newCategory, setNewCategory] = React.useState<boolean>(false);
   const toast = useToast();
 
   function handleChange(category) {
@@ -90,6 +94,10 @@ export function Home() {
 
   return (
     <>
+      {newCategory && (
+        <NewCategory open={newCategory} onClose={() => setNewCategory(false)} />
+      )}
+
       {newUnit && (
         <NewUnit
           category={currentCategory?.id}
@@ -118,137 +126,173 @@ export function Home() {
       )}
 
       <Layout>
-        <chakra.button
-          size="lg"
-          aria-label="Incluir unidade"
-          pos="fixed"
-          bg={currentCategory?.color}
-          right="24px"
-          bottom="24px"
-          h="56px"
-          w="56px"
-          display="flex"
-          shadow="md"
-          justifyContent="center"
-          alignItems="center"
-          rounded="50%"
-          onClick={() => setNewUnit(true)}
-        >
-          <FiPlus size={32} color="white" />
-        </chakra.button>
+        {categories.length > 0 ? (
+          <>
+            <chakra.button
+              size="lg"
+              aria-label="Incluir unidade"
+              pos="fixed"
+              bg={currentCategory?.color}
+              right="24px"
+              bottom="24px"
+              h="56px"
+              w="56px"
+              display="flex"
+              shadow="md"
+              justifyContent="center"
+              alignItems="center"
+              rounded="50%"
+              onClick={() => setNewUnit(true)}
+            >
+              <FiPlus size={32} color="white" />
+            </chakra.button>
 
-        <Slide in={totalizers}>
+            <Slide in={totalizers}>
+              <Box
+                borderLeftWidth={1}
+                p={3}
+                h="full"
+                w="240px"
+                pos="fixed"
+                right={0}
+              >
+                <Stack spacing={2}>
+                  <Box borderWidth={1} p={4} rounded={4}>
+                    <Box display="flex" gap={2} color="gray.500">
+                      <Text>Compras</Text>
+                      <FiArrowDown size={20} />
+                    </Box>
+                    <Heading size="lg" color="gray.700">
+                      {formatToBrl(units.totalizers.purchases)}
+                    </Heading>
+                  </Box>
+                  <Box borderWidth={1} p={4} rounded={4}>
+                    <Box display="flex" color="gray.500" gap={2}>
+                      <Text>Vendas</Text>
+                      <FiArrowUp size={20} />
+                    </Box>
+                    <Heading size="lg" color="gray.700">
+                      {formatToBrl(units.totalizers.sales)}
+                    </Heading>
+                  </Box>
+                  <Box borderWidth={1} p={4} rounded={4}>
+                    <Box display="flex" gap={2} color="gray.500">
+                      <Text>Lucro</Text>
+                      <FiDollarSign size={20} />
+                    </Box>
+                    <Heading size="lg" color="gray.700">
+                      {formatToBrl(units.totalizers.profit)}
+                    </Heading>
+                  </Box>
+                </Stack>
+              </Box>
+            </Slide>
+
+            <div
+              style={{
+                transition: "width 0.5s",
+                width: totalizers ? "calc(100% - 240px)" : "100%",
+              }}
+            >
+              <TopBar
+                filters={filters}
+                setFilters={setFilters}
+                handleChange={handleChange}
+                currentCategory={currentCategory}
+                color={currentCategory?.color}
+                onToggleTotalizers={() => setTotalizers(!totalizers)}
+              />
+
+              <Box h="calc(100vh - 64px)" overflow="auto" mt={2}>
+                <Table
+                  columns={[
+                    { label: "Nome", name: "name" },
+                    {
+                      label: "Preço Compra",
+                      name: "purchase_price",
+                      align: "right",
+                      width: 160,
+                    },
+                    { label: "Vencimento", name: "expiration_date" },
+                    {
+                      label: "Vendido",
+                      name: "sold",
+                      align: "center",
+                      width: 30,
+                      format: (v) =>
+                        v && (
+                          <FiCheckSquare
+                            size={18}
+                            color="#188d4f"
+                            style={{ display: "inline-block" }}
+                          />
+                        ),
+                    },
+                    {
+                      label: "Preço Venda",
+                      name: "sale_price",
+                      align: "right",
+                      width: 150,
+                    },
+                    {
+                      label: "Lucro",
+                      name: "profit",
+                      align: "right",
+                      width: 130,
+                    },
+                    { label: "Cliente", name: "client_name", align: "right" },
+                  ]}
+                  data={units.data}
+                  contextActions={(unit: Unit) => [
+                    {
+                      label: "Vender",
+                      icon: <FiDollarSign />,
+                      hide: unit.sold,
+                      onClick: () => setAction({ type: "sell", unit }),
+                    },
+                    {
+                      label: "Editar",
+                      icon: <FiEdit />,
+                      onClick: () => setAction({ type: "edit", unit }),
+                    },
+                    {
+                      label: "Excluir",
+                      icon: <FiTrash />,
+                      onClick: () => handleDelete(unit.id),
+                    },
+                  ]}
+                />
+              </Box>
+            </div>
+          </>
+        ) : (
           <Box
-            borderLeftWidth={1}
-            p={3}
-            h="full"
-            w="240px"
-            pos="fixed"
-            right={0}
+            display="flex"
+            flexDir="column"
+            justifyContent="center"
+            alignItems="center"
+            boxSizing="border-box"
+            textAlign="center"
+            h="400"
+            p={4}
           >
-            <Stack spacing={2}>
-              <Box borderWidth={1} p={4} rounded={4}>
-                <Box display="flex" gap={2} color="gray.500">
-                  <Text>Compras</Text>
-                  <FiArrowDown size={20} />
-                </Box>
-                <Heading size="lg" color="gray.700">
-                  {formatToBrl(units.totalizers.purchases)}
-                </Heading>
-              </Box>
-              <Box borderWidth={1} p={4} rounded={4}>
-                <Box display="flex" color="gray.500" gap={2}>
-                  <Text>Vendas</Text>
-                  <FiArrowUp size={20} />
-                </Box>
-                <Heading size="lg" color="gray.700">
-                  {formatToBrl(units.totalizers.sales)}
-                </Heading>
-              </Box>
-              <Box borderWidth={1} p={4} rounded={4}>
-                <Box display="flex" gap={2} color="gray.500">
-                  <Text>Lucro</Text>
-                  <FiDollarSign size={20} />
-                </Box>
-                <Heading size="lg" color="gray.700">
-                  {formatToBrl(units.totalizers.profit)}
-                </Heading>
-              </Box>
-            </Stack>
+            <FiFolder size={56} />
+            <Heading size="md" mt={4} mb={1}>
+              Nenhuma categoria inserida
+            </Heading>
+            <Text fontSize="md" color="gray.600">
+              Cadastre uma categoria para poder gerenciar seu estoque
+            </Text>
+            <Button
+              colorScheme="purple"
+              mt={4}
+              onClick={() => setNewCategory(true)}
+              leftIcon={<FiPlus />}
+            >
+              Cadastrar categoria
+            </Button>
           </Box>
-        </Slide>
-
-        <div
-          style={{
-            transition: "width 0.5s",
-            width: totalizers ? "calc(100% - 240px)" : "100%",
-          }}
-        >
-          <TopBar
-            filters={filters}
-            setFilters={setFilters}
-            handleChange={handleChange}
-            currentCategory={currentCategory}
-            color={currentCategory?.color}
-            onToggleTotalizers={() => setTotalizers(!totalizers)}
-          />
-
-          <Box h="calc(100vh - 64px)" overflow="auto" mt={2}>
-            <Table
-              columns={[
-                { label: "Nome", name: "name" },
-                {
-                  label: "Preço Compra",
-                  name: "purchase_price",
-                  align: "right",
-                  width: 160,
-                },
-                { label: "Vencimento", name: "expiration_date" },
-                {
-                  label: "Vendido",
-                  name: "sold",
-                  align: "center",
-                  width: 30,
-                  format: (v) =>
-                    v && (
-                      <FiCheckSquare
-                        size={18}
-                        color="#188d4f"
-                        style={{ display: "inline-block" }}
-                      />
-                    ),
-                },
-                {
-                  label: "Preço Venda",
-                  name: "sale_price",
-                  align: "right",
-                  width: 150,
-                },
-                { label: "Lucro", name: "profit", align: "right", width: 130 },
-                { label: "Cliente", name: "client_name", align: "right" },
-              ]}
-              data={units.data}
-              contextActions={(unit: Unit) => [
-                {
-                  label: "Vender",
-                  icon: <FiDollarSign />,
-                  hide: unit.sold,
-                  onClick: () => setAction({ type: "sell", unit }),
-                },
-                {
-                  label: "Editar",
-                  icon: <FiEdit />,
-                  onClick: () => setAction({ type: "edit", unit }),
-                },
-                {
-                  label: "Excluir",
-                  icon: <FiTrash />,
-                  onClick: () => handleDelete(unit.id),
-                },
-              ]}
-            />
-          </Box>
-        </div>
+        )}
       </Layout>
     </>
   );
