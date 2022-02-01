@@ -13,7 +13,7 @@ class SalesController {
           client_id: data.client,
           sale_price: data.sale_price,
           sold: true,
-          sale_date: new Date(),
+          sale_date: !!data.sale_date ? new Date(data.sale_date) : new Date(),
         },
         include: { product: true },
       });

@@ -1,5 +1,13 @@
 import * as React from "react";
-import { VStack, Input, Text, Select, useToast } from "@chakra-ui/react";
+import {
+  VStack,
+  Input,
+  Text,
+  Select,
+  useToast,
+  FormControl,
+  FormLabel,
+} from "@chakra-ui/react";
 import { Modal } from "../../../components/Modal";
 import { api } from "../../../services/api";
 import { Unit } from "../../../pages/Home/types";
@@ -35,6 +43,7 @@ export function SellUnit(props: SellUnitProps) {
     try {
       await api.post(`/units/${unit.id}/sell`, {
         sale_price: Number(data.sale_price),
+        sale_date: data.sale_date,
         client: Number(data.client),
       });
 
@@ -66,22 +75,38 @@ export function SellUnit(props: SellUnitProps) {
           <Text fontSize="lg" mb={2}>
             {unit.name}
           </Text>
-          <Select
-            flex={4}
-            placeholder="Selecione o cliente"
-            {...register("client")}
-          >
-            {clients.map((client) => (
-              <option key={client.value} value={client.value}>
-                {client.label}
-              </option>
-            ))}
-          </Select>
-          <Input
-            placeholder="Valor da venda"
-            fullWidth
-            {...register("sale_price")}
-          />
+          <FormControl>
+            <FormLabel htmlFor="client-field">Cliente</FormLabel>
+            <Select
+              id="client-field"
+              flex={4}
+              placeholder="Selecione o cliente"
+              {...register("client", { required: true })}
+            >
+              {clients.map((client) => (
+                <option key={client.value} value={client.value}>
+                  {client.label}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="value-field">Valor da venda</FormLabel>
+            <Input
+              id="value-field"
+              fullWidth
+              {...register("sale_price", { required: true })}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="date-field">Data da venda</FormLabel>
+            <Input
+              type="date"
+              id="date-field"
+              fullWidth
+              {...register("sale_date")}
+            />
+          </FormControl>
         </VStack>
       </form>
     </Modal>
