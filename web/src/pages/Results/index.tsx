@@ -19,6 +19,7 @@ import {
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { FiArrowDown, FiArrowUp, FiDollarSign, FiUsers } from "react-icons/fi";
+import { FaBusinessTime } from "react-icons/fa";
 import { IconBaseProps } from "react-icons";
 import { Layout } from "../../components/Layout";
 import { formatToBrl } from "../../utils/formatToBrl";
@@ -54,6 +55,27 @@ const InfoCard = (props: InfoCardProps) => (
     <Box color={props.iconColor} bg={props.iconBg} p={2} rounded="full">
       <props.icon size={40} />
     </Box>
+  </Box>
+);
+
+const EmptyState = () => (
+  <Box
+    display="flex"
+    flexDir="column"
+    justifyContent="center"
+    alignItems="center"
+    boxSizing="border-box"
+    textAlign="center"
+    p={4}
+    h="calc(100% - 56px)"
+  >
+    <FaBusinessTime size={48} />
+    <Heading size="md" mt={4} mb={1}>
+      Nenhuma venda realizada
+    </Heading>
+    <Text fontSize="sm" color="gray.600">
+      Realize sua primeira venda para conseguir visualizar
+    </Text>
   </Box>
 );
 
@@ -146,7 +168,7 @@ export function Results() {
               series={[
                 {
                   name: "Vendas",
-                  data: data?.salesPerMonth,
+                  data: data?.salesPerMonth || [],
                 },
               ]}
               type="line"
@@ -158,28 +180,32 @@ export function Results() {
             <Heading size="md" color="gray.700" p={4}>
               Maiores compradores
             </Heading>
-            <Stack spacing={2}>
-              {data?.bestClients.map((client, i) => (
-                <>
-                  <Flex px={4} alignItems="center">
-                    <Heading size="md">{i + 1}</Heading>
-                    <Avatar
-                      src={client.client.avatar}
-                      size="sm"
-                      ml={4}
-                      mr={6}
-                    />
-                    <Box>
-                      <Heading size="sm">{client.client.name}</Heading>
-                      <Text color="gray.500" size="sm">
-                        {formatToBrl(client.totalSales)}
-                      </Text>
-                    </Box>
-                  </Flex>
-                  {i < 4 && <Divider />}
-                </>
-              ))}
-            </Stack>
+            {data?.bestClients && data?.bestClients.length ? (
+              <Stack spacing={2}>
+                {data?.bestClients.map((client, i) => (
+                  <>
+                    <Flex px={4} alignItems="center">
+                      <Heading size="md">{i + 1}</Heading>
+                      <Avatar
+                        src={client.client.avatar}
+                        size="sm"
+                        ml={4}
+                        mr={6}
+                      />
+                      <Box>
+                        <Heading size="sm">{client.client.name}</Heading>
+                        <Text color="gray.500" size="sm">
+                          {formatToBrl(client.totalSales)}
+                        </Text>
+                      </Box>
+                    </Flex>
+                    {i < 4 && <Divider />}
+                  </>
+                ))}
+              </Stack>
+            ) : (
+              <EmptyState />
+            )}
           </Box>
         </GridItem>
         <GridItem colSpan={2}>
@@ -187,105 +213,117 @@ export function Results() {
             <Heading size="md" color="gray.700" p={4}>
               Percentual de lucro
             </Heading>
-            <ReactApexChart
-              height={300}
-              options={{
-                chart: {
-                  type: "pie",
-                },
-                legend: { show: false },
-                stroke: {
-                  show: false,
-                },
-                colors: ["#4299e1", "#48bb78"],
-                labels: ["Vendas", "Lucro"],
-              }}
-              series={[100 - data?.profitPercentage, data?.profitPercentage]}
-              type="pie"
-            />
+            {data?.profitPercentage ? (
+              <ReactApexChart
+                height={300}
+                options={{
+                  chart: {
+                    type: "pie",
+                  },
+                  legend: { show: false },
+                  stroke: {
+                    show: false,
+                  },
+                  colors: ["#4299e1", "#48bb78"],
+                  labels: ["Vendas", "Lucro"],
+                }}
+                series={[100 - data?.profitPercentage, data?.profitPercentage]}
+                type="pie"
+              />
+            ) : (
+              <Box w={270} h={270} rounded="full" bg="gray.100" m="auto" />
+            )}
           </Box>
         </GridItem>
 
         <GridItem colSpan={4}>
-          <Box w="full" borderWidth={1} rounded={4}>
+          <Box w="full" borderWidth={1} rounded={4} h={420}>
             <Heading size="md" color="gray.700" p={4}>
               Produtos mais vendidos
             </Heading>
-            <Table size="sm">
-              <Thead>
-                <Th>#</Th>
-                <Th>Produto</Th>
-                <Th>Unidades vendidas</Th>
-                <Th>Lucro</Th>
-              </Thead>
-              <Tbody>
-                {data?.bestSellers.map((product, i) => (
-                  <Tr>
-                    <Td w={10}>
-                      <Heading size="md">{i + 1}</Heading>
-                    </Td>
-                    <Td display="flex" alignItems="center">
-                      <Image
-                        h="48px"
-                        w="48px"
-                        src={product.product.thumb}
-                        mr={2}
-                      />
-                      {product.product.name}
-                    </Td>
-                    <Td>{product.totalUnits} un.</Td>
-                    <Td>{formatToBrl(product.totalProfit)}</Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
+            {data?.bestSellers && data.bestSellers.length ? (
+              <Table size="sm">
+                <Thead>
+                  <Th>#</Th>
+                  <Th>Produto</Th>
+                  <Th>Unidades vendidas</Th>
+                  <Th>Lucro</Th>
+                </Thead>
+                <Tbody>
+                  {data?.bestSellers.map((product, i) => (
+                    <Tr>
+                      <Td w={10}>
+                        <Heading size="md">{i + 1}</Heading>
+                      </Td>
+                      <Td display="flex" alignItems="center">
+                        <Image
+                          h="48px"
+                          w="48px"
+                          src={product.product.thumb}
+                          mr={2}
+                        />
+                        {product.product.name}
+                      </Td>
+                      <Td>{product.totalUnits} un.</Td>
+                      <Td>{formatToBrl(product.totalProfit)}</Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            ) : (
+              <EmptyState />
+            )}
           </Box>
         </GridItem>
         <GridItem colSpan={4}>
-          <Box w="full" borderWidth={1} rounded={4}>
+          <Box w="full" borderWidth={1} rounded={4} h={420}>
             <Heading size="md" color="gray.700" px={4} pt={4}>
               Vendas por categoria
             </Heading>
-            <ReactApexChart
-              options={{
-                chart: {
-                  type: "bar",
-                  height: 350,
-                  toolbar: { show: false },
-                },
-                plotOptions: {
-                  bar: {
-                    borderRadius: 4,
-                    horizontal: true,
-                    barHeight: "50px",
-                    distributed: true,
+            {data?.salesByCategory && data?.salesByCategory.length ? (
+              <ReactApexChart
+                options={{
+                  chart: {
+                    type: "bar",
+                    height: 350,
+                    toolbar: { show: false },
                   },
-                },
-                legend: { show: false },
-                dataLabels: {
-                  enabled: false,
-                },
-                xaxis: {
-                  categories: data?.salesByCategory.map(
-                    ({ category }) => category.name
+                  plotOptions: {
+                    bar: {
+                      borderRadius: 4,
+                      horizontal: true,
+                      barHeight: "50px",
+                      distributed: true,
+                    },
+                  },
+                  legend: { show: false },
+                  dataLabels: {
+                    enabled: false,
+                  },
+                  xaxis: {
+                    categories: data?.salesByCategory.map(
+                      ({ category }) => category.name
+                    ),
+                    labels: { show: false },
+                  },
+                  colors: data?.salesByCategory.map(
+                    ({ category }) => category.color
                   ),
-                  labels: { show: false },
-                },
-                colors: data?.salesByCategory.map(
-                  ({ category }) => category.color
-                ),
-              }}
-              series={[
-                {
-                  name: "Vendas",
-                  data: data?.salesByCategory.map(
-                    ({ totalSales }) => totalSales
-                  ),
-                },
-              ]}
-              type="bar"
-              height={350}
-            />
+                }}
+                series={[
+                  {
+                    name: "Vendas",
+                    data: data?.salesByCategory.map(
+                      ({ totalSales }) => totalSales
+                    ),
+                  },
+                ]}
+                type="bar"
+                height={350}
+              />
+            ) : (
+              <EmptyState />
+            )}
           </Box>
         </GridItem>
       </Grid>
