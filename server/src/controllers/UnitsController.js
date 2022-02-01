@@ -36,7 +36,9 @@ class UnitsController {
           sold: unit.sold,
           purchase_price: formatMoney(unit.purchase_price),
           sale_price: unit.sold ? formatMoney(unit.sale_price) : null,
-          sale_date: unit.sale_date,
+          sale_date: new Intl.DateTimeFormat("pt-BR", {
+            timeZone: "UTC",
+          }).format(unit.sale_date),
           expiration_date: new Intl.DateTimeFormat("pt-BR", {
             timeZone: "UTC",
           }).format(unit.expiration_date),

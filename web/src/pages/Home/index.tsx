@@ -6,9 +6,9 @@ import {
   chakra,
   Heading,
   Stack,
-  Slide,
   useToast,
   Button,
+  Tooltip,
 } from "@chakra-ui/react";
 import {
   FiPlus,
@@ -222,13 +222,13 @@ export function Home() {
                         name: "sold",
                         align: "center",
                         width: 30,
-                        format: (v) =>
+                        format: (v, all) =>
                           v && (
-                            <FiCheckSquare
-                              size={18}
-                              color="#188d4f"
-                              style={{ display: "inline-block" }}
-                            />
+                            <Tooltip label={`Vendido em ${all.sale_date}`}>
+                              <div style={{ display: "inline-block" }}>
+                                <FiCheckSquare size={18} color="#188d4f" />
+                              </div>
+                            </Tooltip>
                           ),
                       },
                       {
