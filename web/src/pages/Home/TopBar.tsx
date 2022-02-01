@@ -17,6 +17,8 @@ import {
   IconButton,
   ThemeProvider,
   extendTheme,
+  FormLabel,
+  Stack,
 } from "@chakra-ui/react";
 import {
   FiSearch,
@@ -82,11 +84,11 @@ export function PeriodModal(props: {
         },
       }}
     >
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <FormControl fullWidth>
+      <Stack>
+        <FormControl>
+          <FormLabel htmlFor="name-field">Mês</FormLabel>
+
             <Select
-              label="Mês"
               value={period.month}
               onChange={(e) =>
                 setPeriod({ ...period, month: Number(e.target.value) })
@@ -99,11 +101,10 @@ export function PeriodModal(props: {
               ))}
             </Select>
           </FormControl>
-        </Grid>
-        <Grid item xs={6}>
-          <FormControl fullWidth>
+        <FormControl>
+          <FormLabel htmlFor="name-field">Ano</FormLabel>
+
             <Select
-              label="Ano"
               value={period.year}
               onChange={(e) =>
                 setPeriod({ ...period, year: Number(e.target.value) })
@@ -116,8 +117,7 @@ export function PeriodModal(props: {
               ))}
             </Select>
           </FormControl>
-        </Grid>
-      </Grid>
+      </Stack>
     </Modal>
   );
 }
