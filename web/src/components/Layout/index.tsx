@@ -51,12 +51,16 @@ export const Layout = (props: LayoutProps) => {
           mt={2}
         >
           {links.map((link) => (
-            <Tooltip fontSize="md" label={link.label} placement="right">
+            <Tooltip
+              key={link.url}
+              fontSize="md"
+              label={link.label}
+              placement="right"
+            >
               <Box
                 textDecor="none"
                 rounded={4}
                 color="gray.700"
-                key={link.url}
                 to={link.url}
                 as={Link}
                 p={2}
