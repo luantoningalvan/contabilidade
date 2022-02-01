@@ -9,6 +9,7 @@ import {
   Stack,
   Avatar,
   Button,
+  Tooltip,
 } from "@chakra-ui/react";
 import { api } from "../../../services/api";
 import { FiArrowDown, FiArrowUp, FiEdit, FiPlus } from "react-icons/fi";
@@ -26,13 +27,15 @@ interface TransactionCardProps {
 
 function TransactionCard(props: TransactionCardProps) {
   return (
-    <Box display="flex" alignItems="center">
+    <Box display="flex" alignItems="center" gap={4}>
       <Box
         rounded="full"
         w={10}
         h={10}
         display="flex"
         alignItems="center"
+        flexShrink={0}
+        flexGrow={0}
         justifyContent="center"
         bg={props.type === "income" ? "green.100" : "red.100"}
         color={props.type === "income" ? "green.400" : "red.400"}
@@ -43,22 +46,28 @@ function TransactionCard(props: TransactionCardProps) {
           <FiArrowUp size={22} />
         )}
       </Box>
-      <Box ml={4}>
+      <Box>
         <Heading size="sm" mb={1}>
           {props.description}
         </Heading>
         <Text color="gray.500">{formatToBrl(props.value)}</Text>
       </Box>
 
-      <Text flex={1} textAlign="right" color="gray.500">
-        {new Intl.DateTimeFormat("pt-BR", {
-          month: "short",
-          day: "numeric",
-          timeZone: "UTC",
-        })
-          .format(new Date(props.date))
-          .toUpperCase()}
-      </Text>
+      <Tooltip
+        label={new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(
+          new Date(props.date)
+        )}
+      >
+        <Text whiteSpace="nowrap" flex={1} textAlign="right" color="gray.500">
+          {new Intl.DateTimeFormat("pt-BR", {
+            month: "short",
+            day: "numeric",
+            timeZone: "UTC",
+          })
+            .format(new Date(props.date))
+            .toUpperCase()}
+        </Text>
+      </Tooltip>
     </Box>
   );
 }
