@@ -9,6 +9,11 @@ class ProductsController {
       const fetchProducts = await prisma.product.findMany({
         include: { _count: { select: { units: true } } },
         orderBy: { name: "asc" },
+        where: {
+          ...(req.query.search && {
+            name: { contains: req.query.search, mode: "insensitive" },
+          }),
+        },
       });
 
       res.json(
@@ -51,6 +56,12 @@ class ProductsController {
 
   async create(req, res, next) {
     try {
+      const findDuplicate = await prisma.product.findFirst({
+        where: { natCode: req.body.natCode },
+      });
+
+      if (findDuplicate) throw new Error("Código já cadastrado");
+
       const createProduct = await prisma.product.create({ data: req.body });
 
       res.json(createProduct);

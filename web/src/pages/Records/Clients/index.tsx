@@ -14,6 +14,8 @@ import { FiPlus, FiSearch, FiUsers } from "react-icons/fi";
 import { NewClient } from "../../../shared/clients/NewClient";
 import { ViewClient } from "../../../shared/clients/ViewClient";
 import { EmptyState } from "../../../components/EmptyState";
+import { parseOptions } from "../../../utils/parseOptions";
+import { debounce } from "../../../utils/debounce";
 
 type Client = {
   id: number;
@@ -26,16 +28,23 @@ export function Clients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [newClientDialog, setNewClientDialog] = useState(false);
   const [viewClientDialog, setViewClientDialog] = useState<null | number>(null);
+  const [filters, setFilters] = useState({});
 
   const fetchClients = useCallback(() => {
-    api.get("clients").then((res) => {
+    const options = parseOptions(filters);
+
+    api.get(`clients?${options}`).then((res) => {
       setClients(res.data);
     });
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     fetchClients();
   }, [fetchClients]);
+
+  const handleSearch = debounce((txt: string) => {
+    setFilters((curr) => ({ ...curr, search: txt }));
+  });
 
   return (
     <>
@@ -56,30 +65,32 @@ export function Clients() {
       )}
 
       <div>
-        {clients.length > 0 ? (
-          <>
-            <Box
-              display="flex"
-              gap={2}
-              flexDir={["column-reverse", "row"]}
-              justifyContent="space-between"
+        <>
+          <Box
+            display="flex"
+            gap={2}
+            flexDir={["column-reverse", "row"]}
+            justifyContent="space-between"
+          >
+            <InputGroup width={["100%", "auto"]}>
+              <InputLeftElement>
+                <FiSearch />
+              </InputLeftElement>
+              <Input
+                placeholder="Buscar cliente"
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+            </InputGroup>
+            <Button
+              colorScheme="purple"
+              onClick={() => setNewClientDialog(true)}
+              minW="auto"
+              leftIcon={<FiPlus />}
             >
-              <InputGroup width={["100%", "auto"]}>
-                <InputLeftElement>
-                  <FiSearch />
-                </InputLeftElement>
-                <Input placeholder="Buscar cliente" />
-              </InputGroup>
-              <Button
-                colorScheme="purple"
-                onClick={() => setNewClientDialog(true)}
-                minW="auto"
-                leftIcon={<FiPlus />}
-              >
-                Novo cliente
-              </Button>
-            </Box>
-
+              Novo cliente
+            </Button>
+          </Box>
+          {clients.length > 0 ? (
             <SimpleGrid columns={[2, 3, 4, 6, 6, 8]} spacing={4} mt={4}>
               {clients.map((client) => (
                 <Box
@@ -102,18 +113,18 @@ export function Clients() {
                 </Box>
               ))}
             </SimpleGrid>
-          </>
-        ) : (
-          <EmptyState
-            icon={FiUsers}
-            title="Nenhum cliente encontrado"
-            description="É necessário cadastrar seus clientes para poder realizar vendas"
-            action={{
-              text: "Cadastrar cliente",
-              onClick: () => setNewClientDialog(true),
-            }}
-          />
-        )}
+          ) : (
+            <EmptyState
+              icon={FiUsers}
+              title={
+                Object.values(filters).filter((v) => !!v).length > 0
+                  ? "Nenhum cliente que corresponda a busca"
+                  : "Nenhum cliente encontrado"
+              }
+              description="É necessário cadastrar seus clientes para poder realizar vendas"
+            />
+          )}
+        </>
       </div>
     </>
   );

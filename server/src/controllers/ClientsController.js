@@ -8,6 +8,11 @@ class ClientsController {
     try {
       const fetchClients = await prisma.client.findMany({
         orderBy: { name: "asc" },
+        where: {
+          ...(req.query.search && {
+            name: { contains: req.query.search, mode: "insensitive" },
+          }),
+        },
       });
 
       res.json(
