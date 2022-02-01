@@ -26,8 +26,10 @@ export function EditUnit(props: EditUnitProps) {
 
   React.useEffect(() => {
     api.get(`units/${unitId}`).then((res) => {
-      setValue("price", res.data.purchase_price);
-      setValue("expiration_date", res.data.expiration_date.substring(0, 10));
+      const { purchase_price, expiration_date } = res.data;
+      purchase_price && setValue("price", purchase_price);
+      expiration_date &&
+        setValue("expiration_date", expiration_date.substring(0, 10));
       setUnitData(res.data);
     });
   }, []);
