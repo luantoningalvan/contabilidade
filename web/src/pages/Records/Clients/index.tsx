@@ -10,9 +10,10 @@ import {
   InputGroup,
   Avatar,
 } from "@chakra-ui/react";
-import { FiPlus, FiSearch } from "react-icons/fi";
+import { FiPlus, FiSearch, FiUsers } from "react-icons/fi";
 import { NewClient } from "../../../shared/clients/NewClient";
 import { ViewClient } from "../../../shared/clients/ViewClient";
+import { EmptyState } from "../../../components/EmptyState";
 
 type Client = {
   id: number;
@@ -55,44 +56,64 @@ export function Clients() {
       )}
 
       <div>
-        <Box display="flex" justifyContent="space-between">
-          <InputGroup>
-            <InputLeftElement>
-              <FiSearch />
-            </InputLeftElement>
-            <Input placeholder="Buscar cliente" width="auto" />
-          </InputGroup>
-          <Button
-            colorScheme="purple"
-            onClick={() => setNewClientDialog(true)}
-            leftIcon={<FiPlus />}
-          >
-            Novo cliente
-          </Button>
-        </Box>
-
-        <SimpleGrid columns={8} spacing={4} mt={4}>
-          {clients.map((client) => (
+        {clients.length > 0 ? (
+          <>
             <Box
-              key={client.id}
               display="flex"
-              flexDir="column"
-              justifyContent="center"
-              alignItems="center"
-              borderWidth={1}
-              p={4}
-              rounded={6}
-              cursor="pointer"
-              onClick={() => setViewClientDialog(client.id)}
+              gap={2}
+              flexDir={["column-reverse", "row"]}
+              justifyContent="space-between"
             >
-              <Avatar size="xl" src={client.avatar} />
-
-              <Heading size="sm" noOfLines={2} mt={2}>
-                {client.name}
-              </Heading>
+              <InputGroup width={["100%", "auto"]}>
+                <InputLeftElement>
+                  <FiSearch />
+                </InputLeftElement>
+                <Input placeholder="Buscar cliente" />
+              </InputGroup>
+              <Button
+                colorScheme="purple"
+                onClick={() => setNewClientDialog(true)}
+                minW="auto"
+                leftIcon={<FiPlus />}
+              >
+                Novo cliente
+              </Button>
             </Box>
-          ))}
-        </SimpleGrid>
+
+            <SimpleGrid columns={[2, 3, 4, 6, 6, 8]} spacing={4} mt={4}>
+              {clients.map((client) => (
+                <Box
+                  key={client.id}
+                  display="flex"
+                  flexDir="column"
+                  justifyContent="center"
+                  alignItems="center"
+                  borderWidth={1}
+                  p={4}
+                  rounded={6}
+                  cursor="pointer"
+                  onClick={() => setViewClientDialog(client.id)}
+                >
+                  <Avatar size="xl" src={client.avatar} />
+
+                  <Heading size="sm" textAlign="center" noOfLines={2} mt={2}>
+                    {client.name}
+                  </Heading>
+                </Box>
+              ))}
+            </SimpleGrid>
+          </>
+        ) : (
+          <EmptyState
+            icon={FiUsers}
+            title="Nenhum cliente encontrado"
+            description="É necessário cadastrar seus clientes para poder realizar vendas"
+            action={{
+              text: "Cadastrar cliente",
+              onClick: () => setNewClientDialog(true),
+            }}
+          />
+        )}
       </div>
     </>
   );

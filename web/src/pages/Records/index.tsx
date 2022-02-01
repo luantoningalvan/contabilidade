@@ -19,9 +19,10 @@ export function Records() {
           display="flex"
           alignItems="center"
           gap={4}
-          h="56px"
+          h={["112px", "56px"]}
           p={4}
           borderBottomWidth={1}
+          flexDir={["column", "row"]}
         >
           <Heading size="md">Central de cadastros</Heading>
           <TabList>

@@ -18,6 +18,7 @@ import {
   FiEdit,
   FiTrash,
   FiFolder,
+  FiBox,
 } from "react-icons/fi";
 import { api } from "../../services/api";
 import { Category, Unit } from "./types";
@@ -34,6 +35,7 @@ import { formatToBrl } from "../../utils/formatToBrl";
 import { useConfirmation } from "../../hooks/useConfirmation";
 import { EditUnit } from "../../shared/units/EditUnit";
 import { NewCategory } from "../../shared/categories/NewCategory";
+import { EmptyState } from "../../components/EmptyState";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -204,64 +206,72 @@ export function Home() {
               />
 
               <Box h="calc(100vh - 64px)" overflow="auto" mt={2}>
-                <Table
-                  columns={[
-                    { label: "Nome", name: "name" },
-                    {
-                      label: "Preço Compra",
-                      name: "purchase_price",
-                      align: "right",
-                      width: 160,
-                    },
-                    { label: "Vencimento", name: "expiration_date" },
-                    {
-                      label: "Vendido",
-                      name: "sold",
-                      align: "center",
-                      width: 30,
-                      format: (v) =>
-                        v && (
-                          <FiCheckSquare
-                            size={18}
-                            color="#188d4f"
-                            style={{ display: "inline-block" }}
-                          />
-                        ),
-                    },
-                    {
-                      label: "Preço Venda",
-                      name: "sale_price",
-                      align: "right",
-                      width: 150,
-                    },
-                    {
-                      label: "Lucro",
-                      name: "profit",
-                      align: "right",
-                      width: 130,
-                    },
-                    { label: "Cliente", name: "client_name", align: "right" },
-                  ]}
-                  data={units.data}
-                  contextActions={(unit: Unit) => [
-                    {
-                      label: "Vender",
-                      icon: <FiDollarSign />,
-                      hide: unit.sold,
-                      onClick: () => setAction({ type: "sell", unit }),
-                    },
-                    {
-                      label: "Editar",
-                      icon: <FiEdit />,
-                      onClick: () => setAction({ type: "edit", unit }),
-                    },
-                    {
-                      label: "Excluir",
-                      icon: <FiTrash />,
-                      onClick: () => handleDelete(unit.id),
-                    },
-                  ]}
-                />
+                {units.data.length > 0 ? (
+                  <Table
+                    columns={[
+                      { label: "Nome", name: "name" },
+                      {
+                        label: "Preço Compra",
+                        name: "purchase_price",
+                        align: "right",
+                        width: 160,
+                      },
+                      { label: "Vencimento", name: "expiration_date" },
+                      {
+                        label: "Vendido",
+                        name: "sold",
+                        align: "center",
+                        width: 30,
+                        format: (v) =>
+                          v && (
+                            <FiCheckSquare
+                              size={18}
+                              color="#188d4f"
+                              style={{ display: "inline-block" }}
+                            />
+                          ),
+                      },
+                      {
+                        label: "Preço Venda",
+                        name: "sale_price",
+                        align: "right",
+                        width: 150,
+                      },
+                      {
+                        label: "Lucro",
+                        name: "profit",
+                        align: "right",
+                        width: 130,
+                      },
+                      { label: "Cliente", name: "client_name", align: "right" },
+                    ]}
+                    data={units.data}
+                    contextActions={(unit: Unit) => [
+                      {
+                        label: "Vender",
+                        icon: <FiDollarSign />,
+                        hide: unit.sold,
+                        onClick: () => setAction({ type: "sell", unit }),
+                      },
+                      {
+                        label: "Editar",
+                        icon: <FiEdit />,
+                        onClick: () => setAction({ type: "edit", unit }),
+                      },
+                      {
+                        label: "Excluir",
+                        icon: <FiTrash />,
+                        onClick: () => handleDelete(unit.id),
+                      },
+                    ]}
+                  />
+                ) : (
+                  <EmptyState
+                    icon={FiBox}
+                    title="Nenhuma unidade nesta categoria"
+                    description="Cadastre uma unidade clicando no botão + "
+                  />
+                )}
               </Box>
             </div>
           </>
