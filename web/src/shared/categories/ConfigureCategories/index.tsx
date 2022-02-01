@@ -1,84 +1,24 @@
 import * as React from "react";
-import {
-  VStack,
-  Button,
-  Input,
-  Box,
-  Text,
-  Stack,
-  IconButton,
-} from "@chakra-ui/react";
+import { Button, Box, Text, Stack, IconButton } from "@chakra-ui/react";
 import { FiEdit, FiPlus } from "react-icons/fi";
 import { Modal } from "../../../components/Modal";
 import { useCategories } from "../../../contexts/CategoriesContext";
+import { NewCategory } from "../NewCategory";
 
 interface ConfigureCategoriesProps {
   open: boolean;
   onClose: () => void;
 }
 
-function CategoryModal(props: ConfigureCategoriesProps) {
-  const [data, setData] = React.useState<any>({ color: "#000", name: "" });
-  const { createCategory } = useCategories();
-
-  const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-  };
-
-  const onSubmit = async () => {
-    try {
-      await createCategory(data);
-      props.onClose();
-    } catch (error) {
-      alert("Erro ao criar categoria");
-    }
-  };
-
-  return (
-    <Modal
-      title="Nova categoria"
-      open={props.open}
-      onClose={props.onClose}
-      footer={{
-        primary: {
-          text: "Criar",
-          onClick: onSubmit,
-        },
-      }}
-    >
-      <VStack container spacing={2}>
-        <Input
-          name="name"
-          value={data.name}
-          onChange={handleChange}
-          fullWidth
-        />
-        <Input
-          name="color"
-          value={data.color}
-          onChange={handleChange}
-          type="color"
-          fullWidth
-        />
-      </VStack>
-    </Modal>
-  );
-}
-
-export function ConfigureCategories({
-  onClose,
-  open,
-}: ConfigureCategoriesProps) {
+export function ConfigureCategories(props: ConfigureCategoriesProps) {
+  const { onClose, open } = props;
   const [newCategory, setNewCategory] = React.useState<boolean>(false);
   const { categories } = useCategories();
 
   return (
     <>
       {newCategory && (
-        <CategoryModal
-          open={newCategory}
-          onClose={() => setNewCategory(false)}
-        />
+        <NewCategory open={newCategory} onClose={() => setNewCategory(false)} />
       )}
 
       <Modal open={open} onClose={onClose} title="Configurar categorias">
