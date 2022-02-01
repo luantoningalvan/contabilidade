@@ -33,6 +33,7 @@ import { Category, Filters } from "./types";
 import { Modal } from "../../components/Modal";
 import { useCategories } from "../../contexts/CategoriesContext";
 import { ConfigureCategories } from "../../shared/categories/ConfigureCategories";
+import { debounce } from "../../utils/debounce";
 
 interface FilterProps {
   filters: Filters;
@@ -133,6 +134,10 @@ export function TopBar(props: FilterProps) {
     useSystemColorMode: false,
   });
 
+  const handleSearch = debounce((txt: string) => {
+    setFilters({ ...filters, search: txt });
+  });
+
   return (
     <>
       <ConfigureCategories
@@ -196,7 +201,11 @@ export function TopBar(props: FilterProps) {
               <InputLeftElement>
                 <FiSearch />
               </InputLeftElement>
-              <Input placeholder="Buscar produto" width="auto" />
+              <Input
+                placeholder="Buscar produto"
+                onChange={(e) => handleSearch(e.target.value)}
+                width="auto"
+              />
             </InputGroup>
             {filters.status === 1 && (
               <div>

@@ -14,6 +14,11 @@ class UnitsController {
         },
         orderBy: { sale_date: "desc" },
         where: {
+          ...(req.query.search && {
+            product: {
+              name: { contains: req.query.search, mode: "insensitive" },
+            },
+          }),
           ...(req.query.cat && { category_id: Number(req.query.cat) }),
           ...(req.query.status && { sold: req.query.status === "1" }),
           ...(req.query.status &&

@@ -17,4 +17,5 @@ export type Category = {
 export type Filters = {
   status?: number | null;
   period?: string;
+  search?: string;
 };
