@@ -65,6 +65,7 @@ export function Products() {
           open={!!viewProductDialog}
           onClose={() => setViewProductDialog(null)}
           productId={viewProductDialog}
+          afterDelete={fetchProducts}
         />
       )}
 
@@ -117,6 +118,7 @@ export function Products() {
                   display="flex"
                   justifyContent="center"
                   flexDirection="column"
+                  flex={1}
                   bg="gray.50"
                 >
                   <Heading size="sm" noOfLines={3} mb={2}>

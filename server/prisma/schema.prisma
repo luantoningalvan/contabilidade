@@ -40,7 +40,7 @@ model Transaction {
 model Unit {
     id              Int           @id @default(autoincrement())
     product_id      Int
-    product         Product       @relation(fields: [product_id], references: [id])
+    product         Product       @relation(fields: [product_id], references: [id], onDelete: Cascade)
     sold            Boolean       @default(false)
     purchase_price  Float
     sale_price      Float?

@@ -70,6 +70,28 @@ class ProductsController {
     }
   }
 
+  async update(req, res, next) {
+    try {
+      const findDuplicate = await prisma.product.findFirst({
+        where: {
+          natCode: req.body.natCode,
+          id: { not: Number(req.params.id) },
+        },
+      });
+
+      if (findDuplicate) throw new Error("Código já cadastrado");
+
+      const updateProduct = await prisma.product.update({
+        where: { id: Number(req.params.id) },
+        data: req.body,
+      });
+
+      res.json(updateProduct);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async patchBarCode(req, res, next) {
     try {
       const createProduct = await prisma.product.update({
@@ -82,6 +104,7 @@ class ProductsController {
       next(error);
     }
   }
+
   async fetchByCode(req, res, next) {
     try {
       const code = req.params.code;
@@ -113,6 +136,20 @@ class ProductsController {
       } catch (error) {
         next(error);
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async remove(req, res, next) {
+    const { id } = req.params;
+
+    try {
+      await prisma.product.delete({
+        where: { id: Number(id) },
+      });
+
+      res.status(204).send();
     } catch (error) {
       next(error);
     }
