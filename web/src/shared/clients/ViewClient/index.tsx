@@ -17,6 +17,7 @@ import { BiCake, BiWallet } from "react-icons/bi";
 
 import { formatToBrl } from "../../../utils/formatToBrl";
 import { NewPayment } from "../../transactions/NewPayment";
+import { EditClient } from "../EditClient";
 
 interface TransactionCardProps {
   value: string;
@@ -83,6 +84,7 @@ export function ViewClient(props: ViewClientProps) {
   const [clientData, setClientData] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [newPayment, setNewPayment] = React.useState(false);
+  const [editClient, setEditClient] = React.useState(false);
 
   const fetchClient = React.useCallback(async () => {
     setLoading(true);
@@ -120,12 +122,14 @@ export function ViewClient(props: ViewClientProps) {
                 </Box>
               )}
 
-              <Box>
-                <Button leftIcon={<FiEdit />} colorScheme="blue" isFullWidth>
+              <Box width="full">
+                <Button
+                  onClick={() => setEditClient(true)}
+                  leftIcon={<FiEdit />}
+                  colorScheme="blue"
+                  isFullWidth
+                >
                   Editar
-                </Button>
-                <Button colorScheme="red" variant="ghost" isFullWidth mt={2}>
-                  Excluir
                 </Button>
               </Box>
             </Stack>
@@ -200,6 +204,15 @@ export function ViewClient(props: ViewClientProps) {
         <NewPayment
           open={newPayment}
           onClose={() => setNewPayment(false)}
+          clientId={clientId}
+          afterSubmit={fetchClient}
+        />
+      )}
+
+      {editClient && (
+        <EditClient
+          open={editClient}
+          onClose={() => setEditClient(false)}
           clientId={clientId}
           afterSubmit={fetchClient}
         />

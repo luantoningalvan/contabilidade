@@ -19,7 +19,7 @@ const io = new Server(server, {
 const port = process.env.PORT;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 app.use(function (err, req, res, next) {
   console.error(err.stack);
