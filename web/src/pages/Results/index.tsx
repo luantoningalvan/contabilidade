@@ -88,8 +88,13 @@ export function Results() {
 
   return (
     <Layout>
-      <Grid p={8} gap={4} templateColumns="repeat(8, 1fr)">
-        <GridItem colSpan={2}>
+      <Grid
+        m={[4, 8]}
+        boxSizing="border-box"
+        gap={4}
+        templateColumns={["repeat(1, 1fr)", "repeat(8, 1fr)"]}
+      >
+        <GridItem colSpan={[1, 2]}>
           <InfoCard
             title="Total em vendas"
             value={formatToBrl(data?.totalSales)}
@@ -98,7 +103,7 @@ export function Results() {
             iconColor="green.400"
           />
         </GridItem>
-        <GridItem colSpan={2}>
+        <GridItem colSpan={[1, 2]}>
           <InfoCard
             title="Lucro"
             value={formatToBrl(data?.totalProfit)}
@@ -107,7 +112,7 @@ export function Results() {
             iconColor="yellow.500"
           />
         </GridItem>
-        <GridItem colSpan={2}>
+        <GridItem colSpan={[1, 2]}>
           <InfoCard
             title="Total a receber"
             value={formatToBrl(data?.totalReceivable)}
@@ -116,7 +121,7 @@ export function Results() {
             iconColor="blue.400"
           />
         </GridItem>
-        <GridItem colSpan={2}>
+        <GridItem colSpan={[1, 2]}>
           <InfoCard
             title="Total de clientes"
             value={data?.totalClients}
@@ -125,7 +130,7 @@ export function Results() {
             iconColor="red.400"
           />
         </GridItem>
-        <GridItem colSpan={4}>
+        <GridItem colSpan={[1, 4]}>
           <Box w="full" borderWidth={1} rounded={4} h={350}>
             <Heading size="md" color="gray.700" p={4}>
               Total de vendas por mês
@@ -175,7 +180,7 @@ export function Results() {
             />
           </Box>
         </GridItem>
-        <GridItem colSpan={2}>
+        <GridItem colSpan={[1, 2]}>
           <Box w="full" borderWidth={1} rounded={4} h={350}>
             <Heading size="md" color="gray.700" p={4}>
               Maiores compradores
@@ -208,7 +213,7 @@ export function Results() {
             )}
           </Box>
         </GridItem>
-        <GridItem colSpan={2}>
+        <GridItem colSpan={[1, 2]}>
           <Box w="full" borderWidth={1} rounded={4} h={350}>
             <Heading size="md" color="gray.700" p={4}>
               Percentual de lucro
@@ -236,7 +241,7 @@ export function Results() {
           </Box>
         </GridItem>
 
-        <GridItem colSpan={4}>
+        <GridItem colSpan={[1, 4]}>
           <Box w="full" borderWidth={1} rounded={4} h={420}>
             <Heading size="md" color="gray.700" p={4}>
               Produtos mais vendidos
@@ -275,7 +280,7 @@ export function Results() {
             )}
           </Box>
         </GridItem>
-        <GridItem colSpan={4}>
+        <GridItem colSpan={[1, 4]}>
           <Box w="full" borderWidth={1} rounded={4} h={420}>
             <Heading size="md" color="gray.700" px={4} pt={4}>
               Vendas por categoria

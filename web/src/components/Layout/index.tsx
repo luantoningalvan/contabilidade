@@ -16,20 +16,24 @@ export const Layout = (props: LayoutProps) => {
   return (
     <>
       <Box
-        w="56px"
-        h="100vh"
+        w={["100vw", "56px"]}
+        h={["56px", "100vh"]}
         display="flex"
         borderRightWidth={1}
-        flexDirection="column"
+        flexDirection={["row", "column"]}
         align="center"
         pos="fixed"
-        top={0}
+        top={[undefined, 0]}
+        bottom={[0, undefined]}
         left={0}
+        bg="white"
+        zIndex={100}
+        borderTopWidth={[1, 0]}
       >
         <Box
           w="56px"
           h="56px"
-          display="flex"
+          display={["none", "flex"]}
           alignItems="center"
           justifyContent="center"
           fontSize="1.3rem"
@@ -44,11 +48,12 @@ export const Layout = (props: LayoutProps) => {
         <Box
           as="nav"
           display="flex"
-          flexDirection="column"
-          height="3rem"
+          flexDirection={["row", "column"]}
+          height="56px"
           alignItems="center"
           gap={1}
-          mt={2}
+          mt={[0, 2]}
+          flex={[1, "none"]}
         >
           {links.map((link) => (
             <Tooltip
@@ -60,6 +65,7 @@ export const Layout = (props: LayoutProps) => {
               <Box
                 textDecor="none"
                 rounded={4}
+                flex={[1, "none"]}
                 color="gray.700"
                 to={link.url}
                 as={Link}
@@ -72,7 +78,7 @@ export const Layout = (props: LayoutProps) => {
           ))}
         </Box>
       </Box>
-      <Box as="main" ml="56px">
+      <Box as="main" ml={[0, "56px"]}>
         {props.children}
       </Box>
     </>
