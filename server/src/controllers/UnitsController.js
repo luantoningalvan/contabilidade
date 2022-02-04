@@ -4,9 +4,16 @@ const { formatMoney } = require("../utils/formatMoney");
 
 class UnitsController {
   async index(req, res, next) {
-    try {
-      const date = new Date(req.query.period);
+    function getDate() {
+      const dt = new Date(req.query.period);
+      const month = dt.getMonth();
+      const year = dt.getFullYear();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      return { firstDay, lastDay };
+    }
 
+    try {
       const fetchUnits = await prisma.unit.findMany({
         include: {
           client: { select: { name: true } },
@@ -27,7 +34,10 @@ class UnitsController {
           ...(req.query.status && { sold: req.query.status === "2" }),
           ...(req.query.status &&
             req.query.period && {
-              AND: [{ sale_date: { lte: date } }, { sale_date: { gte: date } }],
+              AND: [
+                { sale_date: { lte: getDate().lastDay } },
+                { sale_date: { gte: getDate().firstDay } },
+              ],
             }),
         },
       });

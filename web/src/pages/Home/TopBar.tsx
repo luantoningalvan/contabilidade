@@ -19,6 +19,7 @@ import {
   extendTheme,
   FormLabel,
   Stack,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import {
   FiSearch,
@@ -89,35 +90,35 @@ export function PeriodModal(props: {
         <FormControl>
           <FormLabel htmlFor="name-field">Mês</FormLabel>
 
-            <Select
-              value={period.month}
-              onChange={(e) =>
-                setPeriod({ ...period, month: Number(e.target.value) })
-              }
-            >
-              {months.map((month, index) => (
-                <option key={month} value={index}>
-                  {month}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
+          <Select
+            value={period.month}
+            onChange={(e) =>
+              setPeriod({ ...period, month: Number(e.target.value) })
+            }
+          >
+            {months.map((month, index) => (
+              <option key={month} value={index}>
+                {month}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
         <FormControl>
           <FormLabel htmlFor="name-field">Ano</FormLabel>
 
-            <Select
-              value={period.year}
-              onChange={(e) =>
-                setPeriod({ ...period, year: Number(e.target.value) })
-              }
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
+          <Select
+            value={period.year}
+            onChange={(e) =>
+              setPeriod({ ...period, year: Number(e.target.value) })
+            }
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
       </Stack>
     </Modal>
   );
@@ -209,27 +210,28 @@ export function TopBar(props: FilterProps) {
             </InputGroup>
             {filters.status === 2 && (
               <div>
-                {filters.period && (
+                <ButtonGroup isAttached>
+                  {filters.period && (
+                    <IconButton
+                      aria-label="Add to friends"
+                      icon={<FiX />}
+                      onClick={() =>
+                        setFilters({ ...filters, period: undefined })
+                      }
+                    />
+                  )}
                   <Button
-                    size="small"
-                    onClick={() =>
-                      setFilters({ ...filters, period: undefined })
-                    }
+                    rightIcon={<FiCalendar />}
+                    onClick={() => setPeriodModal(true)}
                   >
-                    <FiX />
+                    {filters.period
+                      ? new Intl.DateTimeFormat("pt-BR", {
+                          month: "long",
+                          year: "numeric",
+                        }).format(new Date(filters.period))
+                      : "Todo tempo"}
                   </Button>
-                )}
-                <Button
-                  rightIcon={<FiCalendar />}
-                  onClick={() => setPeriodModal(true)}
-                >
-                  {filters.period
-                    ? new Intl.DateTimeFormat("pt-BR", {
-                        month: "long",
-                        year: "numeric",
-                      }).format(new Date(filters.period))
-                    : "Todo tempo"}
-                </Button>
+                </ButtonGroup>
               </div>
             )}
             <FormControl size="small" style={{ minWidth: 200 }}>
