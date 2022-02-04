@@ -194,7 +194,7 @@ export function NewUnit(props: NewUnitProps) {
           open={!!associateProduct}
           onClose={() => setAssociateProducts(null)}
           barCode={associateProduct}
-          afterSubmit={(data) => includeUnit(data)}
+          afterSubmit={(data) => includeUnit({ product: data })}
         />
       )}
     </>
