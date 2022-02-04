@@ -12,7 +12,11 @@ class UnitsController {
           client: { select: { name: true } },
           product: { select: { name: true } },
         },
-        orderBy: { sale_date: "desc" },
+        orderBy: {
+          ...(req.query.orderBy && {
+            [req.query.orderBy]: req.query.sort || "asc",
+          }),
+        },
         where: {
           ...(req.query.search && {
             product: {

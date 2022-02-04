@@ -149,19 +149,19 @@ export function Home() {
               <FiPlus size={32} color="white" />
             </chakra.button>
 
-              <Box
-                borderLeftWidth={1}
-                p={3}
-                h="full"
-                w="240px"
-                pos="fixed"
-                right={0}
+            <Box
+              borderLeftWidth={1}
+              p={3}
+              h="full"
+              w="240px"
+              pos="fixed"
+              right={0}
               transform={totalizers ? "translateX(0px)" : "translateX(240px)"}
               transition="transform 0.3s ease-in-out"
-              >
-                <Stack spacing={2}>
-                  <Box borderWidth={1} p={4} rounded={4}>
-                    <Box display="flex" gap={2} color="gray.500">
+            >
+              <Stack spacing={2}>
+                <Box borderWidth={1} p={4} rounded={4}>
+                  <Box display="flex" gap={2} color="gray.500">
                     <Text>Quantidade</Text>
                     <FiBox size={20} />
                   </Box>
@@ -171,33 +171,33 @@ export function Home() {
                 </Box>
                 <Box borderWidth={1} p={4} rounded={4}>
                   <Box display="flex" gap={2} color="gray.500">
-                      <Text>Compras</Text>
-                      <FiArrowDown size={20} />
-                    </Box>
-                    <Heading size="lg" color="gray.700">
-                      {formatToBrl(units.totalizers.purchases)}
-                    </Heading>
+                    <Text>Compras</Text>
+                    <FiArrowDown size={20} />
                   </Box>
-                  <Box borderWidth={1} p={4} rounded={4}>
-                    <Box display="flex" color="gray.500" gap={2}>
-                      <Text>Vendas</Text>
-                      <FiArrowUp size={20} />
-                    </Box>
-                    <Heading size="lg" color="gray.700">
-                      {formatToBrl(units.totalizers.sales)}
-                    </Heading>
+                  <Heading size="lg" color="gray.700">
+                    {formatToBrl(units.totalizers.purchases)}
+                  </Heading>
+                </Box>
+                <Box borderWidth={1} p={4} rounded={4}>
+                  <Box display="flex" color="gray.500" gap={2}>
+                    <Text>Vendas</Text>
+                    <FiArrowUp size={20} />
                   </Box>
-                  <Box borderWidth={1} p={4} rounded={4}>
-                    <Box display="flex" gap={2} color="gray.500">
-                      <Text>Lucro</Text>
-                      <FiDollarSign size={20} />
-                    </Box>
-                    <Heading size="lg" color="gray.700">
-                      {formatToBrl(units.totalizers.profit)}
-                    </Heading>
+                  <Heading size="lg" color="gray.700">
+                    {formatToBrl(units.totalizers.sales)}
+                  </Heading>
+                </Box>
+                <Box borderWidth={1} p={4} rounded={4}>
+                  <Box display="flex" gap={2} color="gray.500">
+                    <Text>Lucro</Text>
+                    <FiDollarSign size={20} />
                   </Box>
-                </Stack>
-              </Box>
+                  <Heading size="lg" color="gray.700">
+                    {formatToBrl(units.totalizers.profit)}
+                  </Heading>
+                </Box>
+              </Stack>
+            </Box>
 
             <div
               style={{
@@ -217,19 +217,32 @@ export function Home() {
               <Box h="calc(100vh - 64px)" overflow="auto" mt={2}>
                 {units.data.length > 0 ? (
                   <Table
+                    onOrderChange={(v) =>
+                      setFilters((curr) => ({
+                        ...curr,
+                        orderBy: v[0],
+                        sort: v[1],
+                      }))
+                    }
                     columns={[
                       { label: "Nome", name: "name" },
                       {
                         label: "Preço Compra",
                         name: "purchase_price",
                         align: "right",
-                        width: 160,
+                        width: 180,
+                        orderable: true,
                       },
-                      { label: "Vencimento", name: "expiration_date" },
+                      {
+                        label: "Vencimento",
+                        name: "expiration_date",
+                        orderable: true,
+                      },
                       {
                         label: "Vendido",
                         name: "sold",
                         align: "center",
+                        orderable: true,
                         width: 30,
                         format: (v, all) =>
                           v && (
@@ -244,7 +257,8 @@ export function Home() {
                         label: "Preço Venda",
                         name: "sale_price",
                         align: "right",
-                        width: 150,
+                        orderable: true,
+                        width: 170,
                       },
                       {
                         label: "Lucro",
