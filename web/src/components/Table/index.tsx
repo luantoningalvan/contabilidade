@@ -82,7 +82,7 @@ export const Table = (props: TableProps) => {
                     opacity={currentOrder?.[0] === col.name ? 1 : 0}
                     className="order-button"
                   >
-                    {currentOrder[0] === col.name ? (
+                    {currentOrder?.[0] === col.name ? (
                       currentOrder[1] === "desc" ? (
                         <FiChevronDown size={16} />
                       ) : (
