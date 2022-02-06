@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const fs = require("fs");
 const Jimp = require("jimp");
+const path = require("path");
 
 class ClientsController {
   async index(req, res, next) {
@@ -104,7 +105,16 @@ class ClientsController {
           photo
             .resize(256, 256)
             .quality(60)
-            .write(`uploads/avatars/${imageName}.png`); // save
+            .write(
+              path.join(
+                __dirname,
+                "..",
+                "..",
+                "uploads",
+                "avatars",
+                `${imageName}.png`
+              )
+            );
         });
 
         avatar = `${imageName}.png`;
