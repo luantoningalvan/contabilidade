@@ -61,10 +61,6 @@ export function NewUnit(props: NewUnitProps) {
         ...values.products[findSameProduct],
         quantity: values.products[findSameProduct].quantity + 1,
       });
-      console.log({
-        ...values.products[findSameProduct],
-        quantity: values.products[findSameProduct].quantity + 1,
-      });
     } else {
       append({
         quantity: 1,
@@ -77,14 +73,6 @@ export function NewUnit(props: NewUnitProps) {
 
   React.useEffect(() => {
     const socket = io("http://127.0.0.1:3333");
-
-    socket.on("connect", () => {
-      console.log("socket connected");
-    });
-
-    socket.on("disconnect", () => {
-      console.log("socket disconnected");
-    });
 
     socket.on("newProductScanned", (data) => {
       if (data.isAssociated) {

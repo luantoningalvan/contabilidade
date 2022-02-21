@@ -45,8 +45,6 @@ export function ViewProduct(props: ViewProdutoProps) {
   const confirm = useConfirmation();
   const toast = useToast();
 
-  console.log(productData);
-
   React.useEffect(() => {
     setLoading(true);
     api
