@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Input, Stack, Select } from "@chakra-ui/react";
+import { Input, Stack } from "@chakra-ui/react";
 import { Modal } from "../../../components/Modal";
 import { api } from "../../../services/api";
 import io, { Socket } from "socket.io-client";
 import { AssociateProduct } from "./associateProduct";
 import { useFieldArray, useForm } from "react-hook-form";
+import { Select } from "../../../components/Select";
 
 interface NewUnitProps {
   open: boolean;
@@ -138,7 +139,7 @@ export function NewUnit(props: NewUnitProps) {
         open={open}
         onClose={onClose}
         title="Incluir unidades"
-        size="3xl"
+        size="4xl"
         footer={{
           primary: {
             text: "Adicionar",
@@ -152,16 +153,13 @@ export function NewUnit(props: NewUnitProps) {
             {fields.map((field, index) => (
               <Stack key={field.id} direction="row" spacing={2}>
                 <Select
-                  flex={4}
+                  options={products}
                   placeholder="Selecione o produto"
-                  {...register(`products.${index}.product`)}
-                >
-                  {products.map((product) => (
-                    <option key={product.value} value={product.value}>
-                      {product.label}
-                    </option>
-                  ))}
-                </Select>
+                  control={control}
+                  name={`products.${index}.product`}
+                  flex={4}
+                />
+
                 <Input
                   type="number"
                   placeholder="Qnt."

@@ -3,7 +3,6 @@ import {
   VStack,
   Input,
   Text,
-  Select,
   useToast,
   FormControl,
   FormLabel,
@@ -12,6 +11,7 @@ import { Modal } from "../../../components/Modal";
 import { api } from "../../../services/api";
 import { Unit } from "../../../pages/Home/types";
 import { useForm } from "react-hook-form";
+import { Select } from "../../../components/Select";
 
 interface SellUnitProps {
   open: boolean;
@@ -23,10 +23,9 @@ interface SellUnitProps {
 export function SellUnit(props: SellUnitProps) {
   const { onClose, open, unit, afterSubmit } = props;
   const [clients, setClients] = React.useState([]);
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, control } = useForm();
   const toast = useToast();
 
-  console.log(unit);
   const searchClients = (term?: string) => {
     api
       .get("/clients")
@@ -78,17 +77,12 @@ export function SellUnit(props: SellUnitProps) {
           <FormControl>
             <FormLabel htmlFor="client-field">Cliente</FormLabel>
             <Select
-              id="client-field"
-              flex={4}
+              options={clients}
               placeholder="Selecione o cliente"
-              {...register("client", { required: true })}
-            >
-              {clients.map((client) => (
-                <option key={client.value} value={client.value}>
-                  {client.label}
-                </option>
-              ))}
-            </Select>
+              control={control}
+              name={`client`}
+              flex={4}
+            />
           </FormControl>
           <FormControl>
             <FormLabel htmlFor="value-field">Valor da venda</FormLabel>
