@@ -12,6 +12,8 @@ interface CategoriesContextData {
   categories: Category[];
   createCategory(transation: CategoryInput): Promise<void>;
   fetchCategories(): Promise<void>;
+  currentCategory: any;
+  setCurrentCategory: any;
 }
 
 const CategoriesContext = createContext<CategoriesContextData>(
@@ -20,6 +22,7 @@ const CategoriesContext = createContext<CategoriesContextData>(
 
 export function CategoriesProvider({ children }: CategoriesProviderProps) {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
 
   async function fetchCategories() {
     const res = await api.get("/categories");
@@ -35,7 +38,13 @@ export function CategoriesProvider({ children }: CategoriesProviderProps) {
 
   return (
     <CategoriesContext.Provider
-      value={{ categories, fetchCategories, createCategory }}
+      value={{
+        categories,
+        fetchCategories,
+        createCategory,
+        currentCategory,
+        setCurrentCategory,
+      }}
     >
       {children}
     </CategoriesContext.Provider>

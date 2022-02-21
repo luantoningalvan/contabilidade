@@ -43,10 +43,9 @@ export function Home() {
     data: Unit[];
     totalizers: { purchases: number; sales: number; profit: number };
   }>({ data: [], totalizers: { sales: 0, purchases: 0, profit: 0 } });
-  const [currentCategory, setCurrentCategory] = React.useState<Category | null>(
-    null
-  );
-  const { fetchCategories, categories } = useCategories();
+
+  const { fetchCategories, categories, setCurrentCategory, currentCategory } =
+    useCategories();
   const [action, setAction] = React.useState<null | {
     type: "sell" | "edit" | "delete";
     unit: Unit;
