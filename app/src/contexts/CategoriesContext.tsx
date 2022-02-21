@@ -11,6 +11,7 @@ interface CategoriesProviderProps {
 interface CategoriesContextData {
   categories: Category[];
   createCategory(transation: CategoryInput): Promise<void>;
+  updateCategory(id: number, transation: CategoryInput): Promise<void>;
   fetchCategories(): Promise<void>;
   currentCategory: any;
   setCurrentCategory: any;
@@ -36,6 +37,15 @@ export function CategoriesProvider({ children }: CategoriesProviderProps) {
     setCategories([...categories, category]);
   }
 
+  async function updateCategory(id: number, categoryInput: CategoryInput) {
+    const response = await api.put(`/categories/${id}`, categoryInput);
+    const newCategoryData = response.data;
+
+    setCategories(
+      categories.map((cat) => (cat.id === id ? newCategoryData : cat))
+    );
+  }
+
   return (
     <CategoriesContext.Provider
       value={{
@@ -44,6 +54,7 @@ export function CategoriesProvider({ children }: CategoriesProviderProps) {
         createCategory,
         currentCategory,
         setCurrentCategory,
+        updateCategory,
       }}
     >
       {children}

@@ -21,7 +21,7 @@ import {
   FiBox,
 } from "react-icons/fi";
 import { api } from "../../services/api";
-import { Category, Unit } from "./types";
+import { Unit } from "./types";
 
 import { Layout } from "../../components/Layout";
 import { TopBar } from "./TopBar";
