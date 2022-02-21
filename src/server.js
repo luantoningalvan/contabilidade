@@ -20,6 +20,7 @@ const io = new Server(server, {
 const port = process.env.PORT;
 
 app.use(express.json({ limit: "1mb" }));
+app.use(cors());
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use("/public", express.static(path.join(__dirname, "..", "uploads")));
@@ -29,8 +30,6 @@ app.use("/api", routes);
 app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
-
-app.use(cors());
 
 app.use(function (err, req, res, next) {
   console.error(err.stack);
