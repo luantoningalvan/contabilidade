@@ -1,5 +1,5 @@
 import { ChakraProps, chakra } from "@chakra-ui/react";
-import { Select as ChakraSelect } from "chakra-react-select";
+import { CreatableSelect as ChakraSelect } from "chakra-react-select";
 import { Controller, Control } from "react-hook-form";
 
 type Option = {
@@ -12,10 +12,18 @@ interface SelectProps extends ChakraProps {
   options: Option[];
   control: Control<any>;
   placeholder?: string;
+  onCreate?: (text: string) => void;
 }
 
 export const Select = (props: SelectProps) => {
-  const { control, placeholder, options, name, ...rest } = props;
+  const {
+    control,
+    placeholder,
+    options,
+    name,
+    onCreate = () => {},
+    ...rest
+  } = props;
 
   return (
     <chakra.div {...rest}>
@@ -34,6 +42,7 @@ export const Select = (props: SelectProps) => {
               chakraStyles={{
                 dropdownIndicator: (bs) => ({ ...bs, w: 8 }),
               }}
+              onCreateOption={onCreate}
             />
           );
         }}

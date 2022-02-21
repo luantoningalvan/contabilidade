@@ -3,6 +3,7 @@ import { Input, Stack } from "@chakra-ui/react";
 import { Modal } from "../../../components/Modal";
 import { api } from "../../../services/api";
 import io, { Socket } from "socket.io-client";
+import { NewProduct } from "../../products/NewProduct";
 import { AssociateProduct } from "./associateProduct";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Select } from "../../../components/Select";
@@ -18,9 +19,12 @@ export function NewUnit(props: NewUnitProps) {
   const { onClose, open, category, afterSubmit } = props;
   const socketRef = React.useRef<Socket>();
   const [products, setProducts] = React.useState([]);
+
   const [associateProduct, setAssociateProducts] = React.useState<
     null | string
   >(null);
+
+  const [createProduct, setCreateProduct] = React.useState<null | string>(null);
 
   const { register, handleSubmit, setValue, control, getValues } = useForm({
     defaultValues: {
@@ -146,6 +150,9 @@ export function NewUnit(props: NewUnitProps) {
                   control={control}
                   name={`products.${index}.product`}
                   flex={4}
+                  onCreate={(text) =>
+                    setCreateProduct(`products.${index}.product`)
+                  }
                 />
 
                 <Input
@@ -175,12 +182,27 @@ export function NewUnit(props: NewUnitProps) {
           </Stack>
         </form>
       </Modal>
+
       {associateProduct && (
         <AssociateProduct
           open={!!associateProduct}
           onClose={() => setAssociateProducts(null)}
           barCode={associateProduct}
           afterSubmit={(data) => includeUnit({ product: data })}
+        />
+      )}
+
+      {createProduct !== null && (
+        <NewProduct
+          open={!!createProduct !== null}
+          onClose={() => setCreateProduct(null)}
+          afterSubmit={(data) => {
+            setProducts((curr) => [
+              ...curr,
+              { value: data.id, label: data.name },
+            ]);
+            setValue(createProduct as any, data.id);
+          }}
         />
       )}
     </>
