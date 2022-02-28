@@ -3,6 +3,7 @@ import { Modal } from "../../../components/Modal";
 import { useForm } from "react-hook-form";
 import { Box, Input, Stack, useToast } from "@chakra-ui/react";
 import { api } from "../../../services/api";
+import { debounce } from "../../../utils/debounce";
 
 interface NewProductDialogProps {
   open: boolean;
@@ -30,7 +31,7 @@ export function NewProduct(props: NewProductDialogProps) {
     }
   };
 
-  const findProduct = React.useCallback(async (natCode: string) => {
+  const findProduct = debounce(async (natCode: string) => {
     const findInfo = await api.get(`products/info/${natCode}`);
 
     if (findInfo.data.imageUrl) {
@@ -39,14 +40,13 @@ export function NewProduct(props: NewProductDialogProps) {
     if (findInfo.data.title) {
       setValue("name", findInfo.data.title);
     }
-  }, []);
+  }, 500);
 
   React.useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
-      if (name === "natCode" && value.natCode.length > 3) {
-        findProduct(value.natCode);
-      }
+    const subscription = watch((value, { name }) => {
+      if (name === "natCode") findProduct(value.natCode);
     });
+
     return () => subscription.unsubscribe();
   }, [watch]);
 
