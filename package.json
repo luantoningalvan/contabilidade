@@ -14,7 +14,9 @@
     "dev": "nodemon src/server.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "start": "electron ."
+    "start": "electron .",
+    "docker:up": "docker-compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f docker/docker-compose.yml down"
   },
   "dependencies": {
     "@prisma/client": "^3.8.1",

@@ -1,0 +1,17 @@
+version: "2.4"
+
+services:
+  postgres:
+    image: postgres:13.0-alpine
+    container_name: estoque_postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: estoque
+    ports:
+      - "5432:5432"
+    volumes:
+      - estoque_postgres_data:/data/db
+
+volumes:
+  estoque_postgres_data:
