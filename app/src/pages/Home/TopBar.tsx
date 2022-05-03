@@ -4,7 +4,6 @@ import {
   Button,
   Divider,
   FormControl,
-  Grid,
   Menu,
   MenuItem,
   Select,
@@ -17,26 +16,25 @@ import {
   IconButton,
   ThemeProvider,
   extendTheme,
-  FormLabel,
-  Stack,
   ButtonGroup,
+  Box,
 } from "@chakra-ui/react";
 import {
   FiSearch,
   FiCalendar,
   FiX,
   FiSettings,
-  FiEye,
   FiBarChart2,
 } from "react-icons/fi";
+import { VscGroupByRefType } from "react-icons/vsc";
 import { HiViewGrid } from "react-icons/hi";
 import { Category, Filters } from "./types";
-import { Modal } from "../../components/Modal";
 import { useCategories } from "../../contexts/CategoriesContext";
 import { ConfigureCategories } from "../../shared/categories/ConfigureCategories";
 import { debounce } from "../../utils/debounce";
+import { PeriodModal } from "./PeriodModal";
 
-interface FilterProps {
+interface TopBarProps {
   filters: Filters;
   setFilters: (filters: Filters) => void;
   currentCategory: Category;
@@ -45,86 +43,7 @@ interface FilterProps {
   onToggleTotalizers: () => void;
 }
 
-const years = [2018, 2019, 2020, 2021, 2022];
-const months = [
-  "Janeiro",
-  "Fevereiro",
-  "Março",
-  "Abril",
-  "Maio",
-  "Junho",
-  "Julho",
-  "Agosto",
-  "Setembro",
-  "Outubro",
-  "Novembro",
-  "Dezembro",
-];
-
-export function PeriodModal(props: {
-  open: boolean;
-  onClose(): void;
-  onSubmit: (date: { year: number; month: number }) => void;
-}) {
-  const [period, setPeriod] = React.useState({
-    year: new Date().getFullYear(),
-    month: new Date().getMonth(),
-  });
-
-  return (
-    <Modal
-      open={props.open}
-      onClose={props.onClose}
-      title="Escolha o mês"
-      footer={{
-        primary: {
-          text: "Escolher período",
-          onClick: () => {
-            props.onSubmit(period);
-            props.onClose();
-          },
-        },
-      }}
-    >
-      <Stack>
-        <FormControl>
-          <FormLabel htmlFor="name-field">Mês</FormLabel>
-
-          <Select
-            value={period.month}
-            onChange={(e) =>
-              setPeriod({ ...period, month: Number(e.target.value) })
-            }
-          >
-            {months.map((month, index) => (
-              <option key={month} value={index}>
-                {month}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <FormLabel htmlFor="name-field">Ano</FormLabel>
-
-          <Select
-            value={period.year}
-            onChange={(e) =>
-              setPeriod({ ...period, year: Number(e.target.value) })
-            }
-          >
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-      </Stack>
-    </Modal>
-  );
-}
-
-export function TopBar(props: FilterProps) {
+export function TopBar(props: TopBarProps) {
   const { filters, setFilters } = props;
   const [periodModal, setPeriodModal] = React.useState(false);
   const [configure, setConfigure] = React.useState(false);
@@ -165,37 +84,43 @@ export function TopBar(props: FilterProps) {
           h="56px"
           borderBottomWidth={1}
         >
-          <Menu>
-            <MenuButton
-              bg={currentCategory?.color}
-              _hover={{ filter: "brightness(1.1)" }}
-              _active={{ filter: "brightness(1.2)" }}
-              color="white"
-              as={Button}
-              variant="outline"
-              leftIcon={<HiViewGrid />}
-            >
-              {currentCategory?.name}
-            </MenuButton>
-            <MenuList>
-              {categories.map((cat) => (
-                <MenuItem
-                  value={cat.id}
-                  key={cat.id}
-                  onClick={() => handleChange(cat)}
-                >
-                  {cat.name}
-                </MenuItem>
-              ))}
-              <Divider />
-              <MenuItem
-                icon={<FiSettings size={18} />}
-                onClick={() => setConfigure(true)}
+          <Box display="flex" alignItems="center" gap={2}>
+            <Menu>
+              <MenuButton
+                bg={currentCategory?.color}
+                _hover={{ filter: "brightness(1.1)" }}
+                _active={{ filter: "brightness(1.2)" }}
+                color="white"
+                as={Button}
+                variant="outline"
+                leftIcon={<HiViewGrid />}
               >
-                Configurar categorias
-              </MenuItem>
-            </MenuList>
-          </Menu>
+                {currentCategory?.name}
+              </MenuButton>
+              <MenuList>
+                {categories.map((cat) => (
+                  <MenuItem
+                    value={cat.id}
+                    key={cat.id}
+                    onClick={() => handleChange(cat)}
+                  >
+                    {cat.name}
+                  </MenuItem>
+                ))}
+                <Divider />
+                <MenuItem
+                  icon={<FiSettings size={18} />}
+                  onClick={() => setConfigure(true)}
+                >
+                  Configurar categorias
+                </MenuItem>
+              </MenuList>
+            </Menu>
+
+            <IconButton aria-label="">
+              <VscGroupByRefType />
+            </IconButton>
+          </Box>
 
           <Flex gap={2}>
             <InputGroup>
