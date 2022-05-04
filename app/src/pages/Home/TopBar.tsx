@@ -116,10 +116,6 @@ export function TopBar(props: TopBarProps) {
                 </MenuItem>
               </MenuList>
             </Menu>
-
-            <IconButton aria-label="">
-              <VscGroupByRefType />
-            </IconButton>
           </Box>
 
           <Flex gap={2}>
