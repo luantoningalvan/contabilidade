@@ -232,6 +232,7 @@ export function UnitsTable(props: UnitsTableProps) {
       {
         label: "Excluir",
         icon: <FiTrash />,
+        hide: unit.sold,
         onClick: () => handleDelete(unit.id),
       },
     ],
