@@ -1,6 +1,13 @@
 import * as React from "react";
 
-import { useToast, Tooltip } from "@chakra-ui/react";
+import {
+  useToast,
+  Tooltip,
+  Text,
+  HStack,
+  Button,
+  Checkbox,
+} from "@chakra-ui/react";
 import { FiCheckSquare, FiEdit, FiTrash } from "react-icons/fi";
 import { api } from "../../services/api";
 import { Unit } from "./types";
@@ -93,6 +100,7 @@ const tableColumns: Column[] = [
 export function UnitsTable(props: UnitsTableProps) {
   const { fetchUnits, units, setFilters } = props;
   const [currentOrder, setCurrentOrder] = React.useState<null | string[]>();
+  const [selected, setSelected] = React.useState({});
 
   const [action, setAction] = React.useState<null | {
     type: "sell" | "edit" | "delete";
@@ -119,6 +127,30 @@ export function UnitsTable(props: UnitsTableProps) {
   const unitsToShow = React.useMemo(() => {
     return units.data;
   }, [units]);
+
+  const handleSelect = React.useCallback((id: number) => {
+    setSelected((curr) => ({ ...curr, [id]: !curr[id] }));
+  }, []);
+
+  const handleSelectAll = React.useCallback(
+    (type: Boolean) => {
+      const newValue = unitsToShow.reduce(
+        (prev, curr) => ({ ...prev, [curr.id]: type }),
+        {}
+      );
+      setSelected(newValue);
+    },
+    [unitsToShow]
+  );
+
+  const totalSelected = React.useMemo(
+    () => Object.values(selected).filter(Boolean).length,
+    [selected]
+  );
+
+  const isIndeterminated = React.useMemo(() => {
+    return !!totalSelected && totalSelected < unitsToShow.length;
+  }, [totalSelected, unitsToShow]);
 
   const handleChangeOrder = React.useCallback(
     (col: Column) => {
@@ -182,80 +214,138 @@ export function UnitsTable(props: UnitsTableProps) {
         />
       )}
 
-      <ChakraTable variant="striped" size="sm">
-        <Thead>
-          <Tr>
-            {tableColumns.map((col) => (
-              <Th
-                variant="head"
-                key={col.name}
-                width={col.width}
-                cursor={col.orderable ? "pointer" : "default"}
-                onClick={() => col.orderable && handleChangeOrder(col)}
-                userSelect="none"
-                _hover={{ "& .order-button": { opacity: 1 } }}
+      <Box pos="relative">
+        {!!totalSelected && (
+          <Box
+            pos="absolute"
+            w="full"
+            h="56px"
+            top="-56px"
+            bg="purple.500"
+            zIndex={50}
+            boxSizing="border-box"
+            p="0px 16px"
+            alignItems="center"
+            display="flex"
+            color="white"
+            justifyContent="space-between"
+          >
+            <Text>
+              <strong>{totalSelected}</strong> itens selecionados
+            </Text>
+            <HStack spacing={2}>
+              <Button
+                leftIcon={<FiDollarSign />}
+                variant="outline"
+                colorScheme="white"
               >
-                <Box
-                  display="flex"
-                  flexDir={col.align === "right" ? "row-reverse" : "row"}
-                  alignItems="center"
-                  justifyContent={col.align}
-                  gap={2}
-                >
-                  {col.label}
-                  {col.orderable && (
-                    <Box
-                      width={18}
-                      opacity={currentOrder?.[0] === col.name ? 1 : 0}
-                      className="order-button"
-                    >
-                      {currentOrder?.[0] === col.name ? (
-                        currentOrder[1] === "desc" ? (
-                          <FiChevronDown size={16} />
-                        ) : (
-                          <FiChevronUp size={16} />
-                        )
-                      ) : (
-                        <FiChevronUp color="#bbb" size={16} />
-                      )}
-                    </Box>
-                  )}
-                </Box>
+                Vender
+              </Button>
+
+              <Button
+                leftIcon={<FiTrash />}
+                variant="outline"
+                colorScheme="white"
+              >
+                Excluir
+              </Button>
+            </HStack>
+          </Box>
+        )}
+
+        <ChakraTable variant="striped" size="sm">
+          <Thead>
+            <Tr>
+              <Th width="42px">
+                <Checkbox
+                  colorScheme="purple"
+                  isIndeterminate={isIndeterminated}
+                  isChecked={unitsToShow.length === totalSelected}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                />
               </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {unitsToShow.map((row) => (
-            <ContextMenu<HTMLDivElement>
-              renderMenu={() => (
-                <MenuList>
-                  {contextActions(row).map(
-                    (act) =>
-                      !act.hide && (
-                        <MenuItem onClick={act.onClick} icon={act.icon}>
-                          {act.label}
-                        </MenuItem>
-                      )
-                  )}
-                </MenuList>
-              )}
-            >
-              {(ref) => (
-                <Tr key={`col-${row.id}`} ref={ref}>
-                  {tableColumns.map((col) => (
-                    <Td textAlign={col.align} key={`col-${row.id}-${col.name}`}>
-                      {col.format
-                        ? col.format(row[col.name], row)
-                        : row[col.name]}
+              {tableColumns.map((col) => (
+                <Th
+                  variant="head"
+                  key={col.name}
+                  width={col.width}
+                  cursor={col.orderable ? "pointer" : "default"}
+                  onClick={() => col.orderable && handleChangeOrder(col)}
+                  userSelect="none"
+                  _hover={{ "& .order-button": { opacity: 1 } }}
+                >
+                  <Box
+                    display="flex"
+                    flexDir={col.align === "right" ? "row-reverse" : "row"}
+                    alignItems="center"
+                    justifyContent={col.align}
+                    gap={2}
+                  >
+                    {col.label}
+                    {col.orderable && (
+                      <Box
+                        width={18}
+                        opacity={currentOrder?.[0] === col.name ? 1 : 0}
+                        className="order-button"
+                      >
+                        {currentOrder?.[0] === col.name ? (
+                          currentOrder[1] === "desc" ? (
+                            <FiChevronDown size={16} />
+                          ) : (
+                            <FiChevronUp size={16} />
+                          )
+                        ) : (
+                          <FiChevronUp color="#bbb" size={16} />
+                        )}
+                      </Box>
+                    )}
+                  </Box>
+                </Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {unitsToShow.map((row) => (
+              <ContextMenu<HTMLDivElement>
+                renderMenu={() => (
+                  <MenuList>
+                    {contextActions(row).map(
+                      (act) =>
+                        !act.hide && (
+                          <MenuItem onClick={act.onClick} icon={act.icon}>
+                            {act.label}
+                          </MenuItem>
+                        )
+                    )}
+                  </MenuList>
+                )}
+              >
+                {(ref) => (
+                  <Tr key={`col-${row.id}`} ref={ref}>
+                    <Td width="42px">
+                      <Checkbox
+                        colorScheme="purple"
+                        isChecked={selected[row.id]}
+                        onChange={() => handleSelect(row.id)}
+                      />
                     </Td>
-                  ))}
-                </Tr>
-              )}
-            </ContextMenu>
-          ))}
-        </Tbody>
-      </ChakraTable>
+                    {tableColumns.map((col) => (
+                      <Td
+                        textAlign={col.align}
+                        key={`col-${row.id}-${col.name}`}
+                      >
+                        {col.format
+                          ? col.format(row[col.name], row)
+                          : row[col.name]}
+                      </Td>
+                    ))}
+                  </Tr>
+                )}
+              </ContextMenu>
+            ))}
+          </Tbody>
+        </ChakraTable>
+      </Box>
     </>
   );
 }
