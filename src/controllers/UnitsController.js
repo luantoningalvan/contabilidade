@@ -146,9 +146,14 @@ class UnitsController {
   }
 
   async remove(req, res, next) {
-    const { id: unit_id } = req.params;
+    const { id: units_ids } = req.params;
+
+    const units_ids_array = units_ids.split(",").map(Number);
+
     try {
-      await prisma.unit.delete({ where: { id: Number(unit_id) } });
+      await prisma.unit.deleteMany({
+        where: { id: { in: units_ids_array } },
+      });
       res.json({ ok: true });
     } catch (error) {
       next(error);

@@ -100,7 +100,9 @@ const tableColumns: Column[] = [
 export function UnitsTable(props: UnitsTableProps) {
   const { fetchUnits, units, setFilters } = props;
   const [currentOrder, setCurrentOrder] = React.useState<null | string[]>();
-  const [selected, setSelected] = React.useState({});
+  const [selected, setSelected] = React.useState<{ [key: number]: boolean }>(
+    {}
+  );
 
   const [action, setAction] = React.useState<null | {
     type: "sell" | "edit" | "delete";
@@ -124,6 +126,25 @@ export function UnitsTable(props: UnitsTableProps) {
     [fetchUnits, toast, confirmation]
   );
 
+  const handleDeleteMany = React.useCallback(
+    async (ids: number[]) => {
+      confirmation({
+        title: "Excluir unidades selecionadas",
+        description: "Essa ação é permanente",
+      }).then(async () => {
+        const urlParam = Object.entries(selected)
+          .filter(([_, val]) => !!val)
+          .map(([key]) => key)
+          .join(",");
+        await api.delete(`/units/${urlParam}`);
+        setSelected({});
+        fetchUnits();
+        toast({ status: "success", title: "Unidade excluída" });
+      });
+    },
+    [fetchUnits, toast, confirmation, selected]
+  );
+
   const unitsToShow = React.useMemo(() => {
     return units.data;
   }, [units]);
@@ -133,7 +154,7 @@ export function UnitsTable(props: UnitsTableProps) {
   }, []);
 
   const handleSelectAll = React.useCallback(
-    (type: Boolean) => {
+    (type: boolean) => {
       const newValue = unitsToShow.reduce(
         (prev, curr) => ({ ...prev, [curr.id]: type }),
         {}
@@ -220,7 +241,7 @@ export function UnitsTable(props: UnitsTableProps) {
             pos="absolute"
             w="full"
             h="56px"
-            top="-56px"
+            top="-64px"
             bg="purple.500"
             zIndex={50}
             boxSizing="border-box"
@@ -246,6 +267,9 @@ export function UnitsTable(props: UnitsTableProps) {
                 leftIcon={<FiTrash />}
                 variant="outline"
                 colorScheme="white"
+                onClick={() =>
+                  handleDeleteMany(Object.keys(selected).map(Number))
+                }
               >
                 Excluir
               </Button>
@@ -253,7 +277,7 @@ export function UnitsTable(props: UnitsTableProps) {
           </Box>
         )}
 
-        <ChakraTable variant="striped" size="sm">
+        <ChakraTable variant="striped" size="sm" mt={2}>
           <Thead>
             <Tr>
               <Th width="42px">
