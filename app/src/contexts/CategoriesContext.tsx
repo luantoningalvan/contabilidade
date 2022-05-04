@@ -1,3 +1,4 @@
+import React from "react";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { api } from "../services/api";
 import { Category } from "../pages/Home/types";
@@ -25,26 +26,32 @@ export function CategoriesProvider({ children }: CategoriesProviderProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
 
-  async function fetchCategories() {
+  const fetchCategories = React.useCallback(async () => {
     const res = await api.get("/categories");
     setCategories(res.data);
-  }
+  }, []);
 
-  async function createCategory(categoryInput: CategoryInput) {
-    const response = await api.post("/categories", categoryInput);
-    const category = response.data;
+  const createCategory = React.useCallback(
+    async (categoryInput: CategoryInput) => {
+      const response = await api.post("/categories", categoryInput);
+      const category = response.data;
 
-    setCategories([...categories, category]);
-  }
+      setCategories((curr) => [...curr, category]);
+    },
+    []
+  );
 
-  async function updateCategory(id: number, categoryInput: CategoryInput) {
-    const response = await api.put(`/categories/${id}`, categoryInput);
-    const newCategoryData = response.data;
+  const updateCategory = React.useCallback(
+    async (id: number, categoryInput: CategoryInput) => {
+      const response = await api.put(`/categories/${id}`, categoryInput);
+      const newCategoryData = response.data;
 
-    setCategories(
-      categories.map((cat) => (cat.id === id ? newCategoryData : cat))
-    );
-  }
+      setCategories((curr) =>
+        curr.map((cat) => (cat.id === id ? newCategoryData : cat))
+      );
+    },
+    []
+  );
 
   return (
     <CategoriesContext.Provider
