@@ -9,6 +9,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { FiCheckSquare, FiEdit, FiTrash } from "react-icons/fi";
+import { MdUndo } from "react-icons/md";
 import { api } from "../../services/api";
 import { Unit } from "./types";
 
@@ -193,6 +194,22 @@ export function UnitsTable(props: UnitsTableProps) {
     [currentOrder, setFilters]
   );
 
+  const handleUndoSale = React.useCallback(
+    (unit: Unit) => {
+      confirmation({
+        title: `Desfazer venda da unidade do produto ${unit.name}?`,
+        description:
+          "A cobrança gerada ao cliente será removida e a unidade voltará ao estoque",
+        primaryActionText: "Desfazer",
+      }).then(async () => {
+        await api.delete(`/units/${unit.id}/sell`);
+        fetchUnits();
+        toast({ status: "success", title: "Venda desfeita" });
+      });
+    },
+    [fetchUnits, confirmation, toast]
+  );
+
   const contextActions: (unit: Unit) => Action[] = React.useCallback(
     (unit: Unit) => [
       {
@@ -200,6 +217,12 @@ export function UnitsTable(props: UnitsTableProps) {
         icon: <FiDollarSign />,
         hide: unit.sold,
         onClick: () => setAction({ type: "sell", unit }),
+      },
+      {
+        label: "Desfazer venda",
+        icon: <MdUndo />,
+        hide: !unit.sold,
+        onClick: () => handleUndoSale(unit),
       },
       {
         label: "Editar",

@@ -33,5 +33,32 @@ class SalesController {
       next(error);
     }
   }
+
+  async delete(req, res, next) {
+    const { id: unit_id } = req.params;
+
+    try {
+      const updateUnit = await prisma.unit.update({
+        where: { id: Number(unit_id) },
+        data: {
+          client_id: null,
+          sale_price: null,
+          sold: false,
+          sale_date: null,
+        },
+        include: { product: true },
+      });
+
+      await prisma.transaction.delete({
+        where: {
+          unit_id: Number(unit_id),
+        },
+      });
+
+      res.json(updateUnit);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = new SalesController();

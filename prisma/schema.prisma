@@ -30,7 +30,7 @@ model Transaction {
     description String
     value       Float
     type        Int
-    unit_id     Int?
+    unit_id     Int?     @unique
     unit        Unit?    @relation(fields: [unit_id], references: [id])
     client_id   Int?
     client      Client?  @relation(fields: [client_id], references: [id])
