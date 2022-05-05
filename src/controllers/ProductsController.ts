@@ -1,17 +1,19 @@
-const downloadFile = require("../utils/downloadFile");
-const axios = require("axios");
-const { PrismaClient } = require("@prisma/client");
+import { Request, Response, NextFunction } from "express";
+import downloadFile from "../utils/downloadFile";
+import axios from "axios";
+import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 class ProductsController {
-  async index(req, res, next) {
+  async index(req: Request, res: Response, next: NextFunction) {
     try {
       const fetchProducts = await prisma.product.findMany({
         include: { _count: { select: { units: true } } },
         orderBy: { name: "asc" },
         where: {
           ...(req.query.search && {
-            name: { contains: req.query.search, mode: "insensitive" },
+            name: { contains: req.query.search as string, mode: "insensitive" },
           }),
         },
       });
@@ -32,12 +34,14 @@ class ProductsController {
     }
   }
 
-  async show(req, res, next) {
+  async show(req: Request, res: Response, next: NextFunction) {
     try {
       const findProduct = await prisma.product.findFirst({
         where: { id: Number(req.params.id) },
         include: { units: true },
       });
+
+      if (!findProduct) throw new Error("Produto não encontrado");
 
       res.json({
         ...findProduct,
@@ -45,7 +49,7 @@ class ProductsController {
           ...unit,
           expiration_date: new Intl.DateTimeFormat("pt-BR", {
             timeZone: "UTC",
-          }).format(unit.expiration_date),
+          }).format(unit.expiration_date!),
         })),
         thumb: `http://localhost:3333/public/thumb-${findProduct.natCode}.jpg`,
       });
@@ -54,7 +58,7 @@ class ProductsController {
     }
   }
 
-  async create(req, res, next) {
+  async create(req: Request, res: Response, next: NextFunction) {
     try {
       const findDuplicate = await prisma.product.findFirst({
         where: { natCode: req.body.natCode },
@@ -70,7 +74,7 @@ class ProductsController {
     }
   }
 
-  async update(req, res, next) {
+  async update(req: Request, res: Response, next: NextFunction) {
     try {
       const findDuplicate = await prisma.product.findFirst({
         where: {
@@ -92,7 +96,7 @@ class ProductsController {
     }
   }
 
-  async patchBarCode(req, res, next) {
+  async patchBarCode(req: Request, res: Response, next: NextFunction) {
     try {
       const createProduct = await prisma.product.update({
         where: { id: Number(req.params.code) },
@@ -105,7 +109,7 @@ class ProductsController {
     }
   }
 
-  async fetchByCode(req, res, next) {
+  async fetchByCode(req: Request, res: Response, next: NextFunction) {
     try {
       const code = req.params.code;
 
@@ -141,7 +145,7 @@ class ProductsController {
     }
   }
 
-  async remove(req, res, next) {
+  async remove(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
     try {
@@ -155,4 +159,4 @@ class ProductsController {
     }
   }
 }
-module.exports = new ProductsController();
+export default new ProductsController();

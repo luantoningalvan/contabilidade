@@ -1,8 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
+import fs from "fs";
+import path from "path";
+import https from "https";
 
-const downloadFile = async (url, name) =>
+const downloadFile = async (url: string, name: string) =>
   new Promise((resolve, reject) => {
     try {
       const file = fs.createWriteStream(
@@ -17,4 +17,4 @@ const downloadFile = async (url, name) =>
     }
   });
 
-module.exports = downloadFile;
+export default downloadFile;

@@ -1,8 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+import { Request, Response, NextFunction } from "express";
+import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 class CategoriesController {
-  async index(req, res, next) {
+  async index(req: Request, res: Response, next: NextFunction) {
     try {
       const fetchCategories = await prisma.category.findMany();
 
@@ -12,7 +14,7 @@ class CategoriesController {
     }
   }
 
-  async show(req, res, next) {
+  async show(req: Request, res: Response, next: NextFunction) {
     try {
       const fetchCategory = await prisma.category.findFirst({
         where: { id: Number(req.params.id) },
@@ -24,7 +26,7 @@ class CategoriesController {
     }
   }
 
-  async create(req, res, next) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
 
     try {
@@ -41,7 +43,7 @@ class CategoriesController {
     }
   }
 
-  async update(req, res, next) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
 
     try {
@@ -61,4 +63,5 @@ class CategoriesController {
     }
   }
 }
-module.exports = new CategoriesController();
+
+export default new CategoriesController();

@@ -1,11 +1,12 @@
-const { PrismaClient } = require("@prisma/client");
+import { Request, Response, NextFunction } from "express";
+import { Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-const { formatMoney } = require("../utils/formatMoney");
+import { formatMoney } from "../utils/formatMoney";
 
 class UnitsController {
-  async index(req, res, next) {
+  async index(req: Request, res: Response, next: NextFunction) {
     function getDate() {
-      const dt = new Date(req.query.period);
+      const dt = new Date(req.query.period as string);
       const month = dt.getMonth();
       const year = dt.getFullYear();
       const firstDay = new Date(year, month, 1);
@@ -17,17 +18,20 @@ class UnitsController {
       const fetchUnits = await prisma.unit.findMany({
         include: {
           client: { select: { name: true } },
-          product: { select: { name: true } },
+          product: { select: { name: true, id: true } },
         },
         orderBy: {
           ...(req.query.orderBy && {
-            [req.query.orderBy]: req.query.sort || "asc",
+            [req.query.orderBy as string]: req.query.sort || "asc",
           }),
         },
         where: {
           ...(req.query.search && {
             product: {
-              name: { contains: req.query.search, mode: "insensitive" },
+              name: {
+                contains: req.query.search as string,
+                mode: "insensitive",
+              },
             },
           }),
           ...(req.query.cat && { category_id: Number(req.query.cat) }),
@@ -50,24 +54,24 @@ class UnitsController {
           product_id: unit.product.id,
           sold: unit.sold,
           purchase_price: formatMoney(unit.purchase_price),
-          sale_price: unit.sold ? formatMoney(unit.sale_price) : null,
+          sale_price: unit.sold ? formatMoney(unit.sale_price!) : null,
           sale_date: new Intl.DateTimeFormat("pt-BR", {
             timeZone: "UTC",
-          }).format(unit.sale_date),
+          }).format(unit.sale_date!),
           expiration_date: new Intl.DateTimeFormat("pt-BR", {
             timeZone: "UTC",
-          }).format(unit.expiration_date),
+          }).format(unit.expiration_date!),
           profit: unit.sold
-            ? formatMoney(unit.sale_price - unit.purchase_price)
+            ? formatMoney(unit.sale_price! - unit.purchase_price)
             : null,
         })),
         totalizers: fetchUnits.reduce(
           (prev, curr) => {
             return {
               purchases: prev.purchases + curr.purchase_price,
-              sales: prev.sales + curr.sale_price,
+              sales: prev.sales + curr.sale_price!,
               profit: curr.sold
-                ? prev.profit + (curr.sale_price - curr.purchase_price)
+                ? prev.profit + (curr.sale_price! - curr.purchase_price)
                 : prev.profit,
             };
           },
@@ -83,7 +87,7 @@ class UnitsController {
     }
   }
 
-  async show(req, res, next) {
+  async show(req: Request, res: Response, next: NextFunction) {
     try {
       const findUnit = await prisma.unit.findFirst({
         where: { id: Number(req.params.id) },
@@ -96,13 +100,13 @@ class UnitsController {
     }
   }
 
-  async create(req, res, next) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
 
     try {
-      const dataToInsert = [];
+      const dataToInsert: Prisma.UnitCreateManyInput[] = [];
 
-      data.products.forEach((product) =>
+      data.products.forEach((product: any) =>
         Array(product.quantity)
           .fill(1)
           .forEach(() =>
@@ -127,7 +131,7 @@ class UnitsController {
     }
   }
 
-  async update(req, res, next) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
     const { id: unit_id } = req.params;
 
@@ -146,7 +150,7 @@ class UnitsController {
     }
   }
 
-  async remove(req, res, next) {
+  async remove(req: Request, res: Response, next: NextFunction) {
     const { id: units_ids } = req.params;
 
     const units_ids_array = units_ids.split(",").map(Number);
@@ -161,4 +165,4 @@ class UnitsController {
     }
   }
 }
-module.exports = new UnitsController();
+export default new UnitsController();

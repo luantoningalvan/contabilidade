@@ -1,8 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+import { Request, Response, NextFunction } from "express";
+import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 class DashboardController {
-  async index(req, res, next) {
+  async index(req: Request, res: Response, next: NextFunction) {
     try {
       const sales = await prisma.unit.aggregate({
         where: { sold: true },
@@ -57,7 +59,7 @@ class DashboardController {
       const bestBuyersClients = await prisma.client.findMany({
         where: {
           id: {
-            in: groupSalesByClient.map(({ client_id }) => client_id),
+            in: groupSalesByClient.map(({ client_id }) => client_id!),
           },
         },
       });
@@ -86,10 +88,14 @@ class DashboardController {
           ({ id }) => id === sell.product_id
         );
 
+        if (!findMatchProduct) {
+          return null;
+        }
+
         return {
           product_id: sell.product_id,
           totalUnits: sell._count.id,
-          totalProfit: sell._sum.sale_price - sell._sum.purchase_price,
+          totalProfit: sell._sum.sale_price! - sell._sum.purchase_price!,
           product: {
             name: findMatchProduct.name,
             thumb: `http://localhost:3333/public/thumb-${findMatchProduct.natCode}.jpg`,
@@ -101,6 +107,10 @@ class DashboardController {
         const findMatchClient = bestBuyersClients.find(
           ({ id }) => id === sell.client_id
         );
+
+        if (!findMatchClient) {
+          return null;
+        }
 
         return {
           totalSales: sell._sum.sale_price,
@@ -115,15 +125,15 @@ class DashboardController {
 
       const totalReceivable = findTransactions.reduce(
         (prev, curr) =>
-          curr.type === 1 ? prev - curr._sum.value : prev + curr._sum.value,
+          curr.type === 1 ? prev - curr._sum.value! : prev + curr._sum.value!,
         0
       );
 
       const totalClients = await prisma.client.count();
-      const totalProfit = sales._sum.sale_price - sales._sum.purchase_price;
-      const totalSales = sales._sum.sale_price;
+      const totalProfit = sales._sum.sale_price! - sales._sum.purchase_price!;
+      const totalSales = sales._sum.sale_price || 0;
 
-      const salesPerMonth = await prisma.$queryRaw`
+      const salesPerMonth: any = await prisma.$queryRaw`
         SELECT date_trunc('month', sale_date) 
         AS month, sum(sale_price) as monthly_sum
         FROM "public"."Unit"
@@ -133,7 +143,7 @@ class DashboardController {
 
       let months = Array(12).fill(null);
 
-      salesPerMonth.forEach((month) => {
+      salesPerMonth.forEach((month: any) => {
         const pickMonth = Number(month.month.substring(5, 7));
         months[pickMonth - 1] = month.monthly_sum;
       });
@@ -157,4 +167,4 @@ class DashboardController {
   }
 }
 
-module.exports = new DashboardController();
+export default new DashboardController();

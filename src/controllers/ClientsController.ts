@@ -1,17 +1,18 @@
-const { PrismaClient } = require("@prisma/client");
+import { Request, Response, NextFunction } from "express";
+import { PrismaClient } from "@prisma/client";
+import Jimp from "jimp";
+import path from "path";
+
 const prisma = new PrismaClient();
-const fs = require("fs");
-const Jimp = require("jimp");
-const path = require("path");
 
 class ClientsController {
-  async index(req, res, next) {
+  async index(req: Request, res: Response, next: NextFunction) {
     try {
       const fetchClients = await prisma.client.findMany({
         orderBy: { name: "asc" },
         where: {
           ...(req.query.search && {
-            name: { contains: req.query.search, mode: "insensitive" },
+            name: { contains: req.query.search as string, mode: "insensitive" },
           }),
         },
       });
@@ -29,7 +30,7 @@ class ClientsController {
     }
   }
 
-  async show(req, res, next) {
+  async show(req: Request, res: Response, next: NextFunction) {
     try {
       const findClient = await prisma.client.findFirst({
         where: { id: Number(req.params.id) },
@@ -38,6 +39,8 @@ class ClientsController {
           transactions: { orderBy: { created_at: "desc" } },
         },
       });
+
+      if (!findClient) throw new Error("Cliente não encontrado");
 
       const calculateDebs = findClient.transactions.reduce((prev, curr) => {
         return curr.type === 1 ? prev + curr.value : prev - curr.value;
@@ -55,7 +58,7 @@ class ClientsController {
     }
   }
 
-  async create(req, res, next) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
 
     try {
@@ -90,7 +93,7 @@ class ClientsController {
     }
   }
 
-  async update(req, res, next) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
 
     try {
@@ -137,4 +140,4 @@ class ClientsController {
     }
   }
 }
-module.exports = new ClientsController();
+export default new ClientsController();

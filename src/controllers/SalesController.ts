@@ -1,8 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+import { Request, Response, NextFunction } from "express";
+import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 class SalesController {
-  async create(req, res, next) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
     let results = [];
 
@@ -21,7 +23,7 @@ class SalesController {
 
         await prisma.transaction.create({
           data: {
-            description: updateUnit.product.name,
+            description: updateUnit.product.name!,
             type: 2,
             value: unit.sale_price,
             client_id: unit.client,
@@ -38,7 +40,7 @@ class SalesController {
     }
   }
 
-  async delete(req, res, next) {
+  async delete(req: Request, res: Response, next: NextFunction) {
     const { id: unit_id } = req.params;
 
     try {
@@ -65,4 +67,4 @@ class SalesController {
     }
   }
 }
-module.exports = new SalesController();
+export default new SalesController();

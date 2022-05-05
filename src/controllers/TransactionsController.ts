@@ -1,8 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+import { Request, Response, NextFunction } from "express";
+import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 class TransactionsController {
-  async create(req, res, next) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
 
     try {
@@ -21,4 +23,4 @@ class TransactionsController {
     }
   }
 }
-module.exports = new TransactionsController();
+export default new TransactionsController();
