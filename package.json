@@ -11,7 +11,7 @@
   "homepage": "https://github.com/luantoningalvan/contabilidade",
   "license": "MIT",
   "scripts": {
-    "dev": "tsnd --respawn src/server.js",
+    "dev": "tsnd --respawn src/server.ts",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "start": "electron .",
