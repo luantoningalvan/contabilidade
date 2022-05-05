@@ -104,11 +104,8 @@ export function UnitsTable(props: UnitsTableProps) {
   const [selected, setSelected] = React.useState<{ [key: number]: boolean }>(
     {}
   );
-
-  const [action, setAction] = React.useState<null | {
-    type: "sell" | "edit" | "delete";
-    unit: Unit;
-  }>(null);
+  const [sellUnit, setSellUnit] = React.useState<null | Unit[]>(null);
+  const [editUnit, setEditUnit] = React.useState<null | Unit>(null);
 
   const confirmation = useConfirmation();
   const toast = useToast();
@@ -127,24 +124,21 @@ export function UnitsTable(props: UnitsTableProps) {
     [fetchUnits, toast, confirmation]
   );
 
-  const handleDeleteMany = React.useCallback(
-    async (ids: number[]) => {
-      confirmation({
-        title: "Excluir unidades selecionadas",
-        description: "Essa ação é permanente",
-      }).then(async () => {
-        const urlParam = Object.entries(selected)
-          .filter(([_, val]) => !!val)
-          .map(([key]) => key)
-          .join(",");
-        await api.delete(`/units/${urlParam}`);
-        setSelected({});
-        fetchUnits();
-        toast({ status: "success", title: "Unidade excluída" });
-      });
-    },
-    [fetchUnits, toast, confirmation, selected]
-  );
+  const handleDeleteMany = React.useCallback(async () => {
+    confirmation({
+      title: "Excluir unidades selecionadas",
+      description: "Essa ação é permanente",
+    }).then(async () => {
+      const urlParam = Object.entries(selected)
+        .filter(([_, val]) => !!val)
+        .map(([key]) => key)
+        .join(",");
+      await api.delete(`/units/${urlParam}`);
+      setSelected({});
+      fetchUnits();
+      toast({ status: "success", title: "Unidade excluída" });
+    });
+  }, [fetchUnits, toast, confirmation, selected]);
 
   const unitsToShow = React.useMemo(() => {
     return units.data;
@@ -210,13 +204,23 @@ export function UnitsTable(props: UnitsTableProps) {
     [fetchUnits, confirmation, toast]
   );
 
+  const handleSellMany = React.useCallback(() => {
+    const selectedIds = Object.entries(selected)
+      .filter(([_, val]) => !!val)
+      .map(([key]) => Number(key));
+    const pickUnits: Unit[] = unitsToShow.filter(({ id }) =>
+      selectedIds.includes(id)
+    );
+    setSellUnit(pickUnits);
+  }, [unitsToShow, selected]);
+
   const contextActions: (unit: Unit) => Action[] = React.useCallback(
     (unit: Unit) => [
       {
         label: "Vender",
         icon: <FiDollarSign />,
         hide: unit.sold,
-        onClick: () => setAction({ type: "sell", unit }),
+        onClick: () => setSellUnit([unit]),
       },
       {
         label: "Desfazer venda",
@@ -227,7 +231,7 @@ export function UnitsTable(props: UnitsTableProps) {
       {
         label: "Editar",
         icon: <FiEdit />,
-        onClick: () => setAction({ type: "edit", unit }),
+        onClick: () => setEditUnit(unit),
       },
       {
         label: "Excluir",
@@ -236,25 +240,28 @@ export function UnitsTable(props: UnitsTableProps) {
         onClick: () => handleDelete(unit.id),
       },
     ],
-    [handleDelete]
+    [handleDelete, handleUndoSale]
   );
 
   return (
     <>
-      {action !== null && action.type === "sell" && (
+      {sellUnit !== null && (
         <SellUnit
-          onClose={() => setAction(null)}
-          open={!!action}
-          unit={action.unit}
-          afterSubmit={fetchUnits}
+          onClose={() => setSellUnit(null)}
+          open={!!sellUnit}
+          units={sellUnit}
+          afterSubmit={() => {
+            fetchUnits();
+            setSelected({});
+          }}
         />
       )}
 
-      {action !== null && action.type === "edit" && (
+      {editUnit !== null && (
         <EditUnit
-          onClose={() => setAction(null)}
-          open={!!action}
-          unitId={action.unit.id}
+          onClose={() => setEditUnit(null)}
+          open={!!editUnit}
+          unitId={editUnit.id}
           afterSubmit={fetchUnits}
         />
       )}
@@ -283,6 +290,7 @@ export function UnitsTable(props: UnitsTableProps) {
                 leftIcon={<FiDollarSign />}
                 variant="outline"
                 colorScheme="white"
+                onClick={handleSellMany}
               >
                 Vender
               </Button>
@@ -291,9 +299,7 @@ export function UnitsTable(props: UnitsTableProps) {
                 leftIcon={<FiTrash />}
                 variant="outline"
                 colorScheme="white"
-                onClick={() =>
-                  handleDeleteMany(Object.keys(selected).map(Number))
-                }
+                onClick={handleDeleteMany}
               >
                 Excluir
               </Button>
@@ -373,8 +379,8 @@ export function UnitsTable(props: UnitsTableProps) {
                     <Td width="42px">
                       <Checkbox
                         colorScheme="purple"
-                        isChecked={selected[row.id]}
-                        onChange={() => handleSelect(row.id)}
+                        isChecked={!!selected[row.id]}
+                        onChange={(e) => handleSelect(row.id)}
                       />
                     </Td>
                     {tableColumns.map((col) => (

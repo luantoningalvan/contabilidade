@@ -4,31 +4,35 @@ const prisma = new PrismaClient();
 class SalesController {
   async create(req, res, next) {
     const data = req.body;
-    const { id: unit_id } = req.params;
+    let results = [];
 
     try {
-      const updateUnit = await prisma.unit.update({
-        where: { id: Number(unit_id) },
-        data: {
-          client_id: data.client,
-          sale_price: data.sale_price,
-          sold: true,
-          sale_date: !!data.sale_date ? new Date(data.sale_date) : new Date(),
-        },
-        include: { product: true },
-      });
+      for (const unit of data) {
+        const updateUnit = await prisma.unit.update({
+          where: { id: unit.unit_id },
+          data: {
+            client_id: unit.client,
+            sale_price: unit.sale_price,
+            sold: true,
+            sale_date: !!unit.sale_date ? new Date(unit.sale_date) : new Date(),
+          },
+          include: { product: true },
+        });
 
-      await prisma.transaction.create({
-        data: {
-          description: updateUnit.product.name,
-          type: 2,
-          value: data.sale_price,
-          client_id: data.client,
-          unit_id: Number(unit_id),
-        },
-      });
+        await prisma.transaction.create({
+          data: {
+            description: updateUnit.product.name,
+            type: 2,
+            value: unit.sale_price,
+            client_id: unit.client,
+            unit_id: unit.unit_id,
+          },
+        });
 
-      res.json(updateUnit);
+        results.push(updateUnit);
+      }
+
+      res.json(results);
     } catch (error) {
       next(error);
     }

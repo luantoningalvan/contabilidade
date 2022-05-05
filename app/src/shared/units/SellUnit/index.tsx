@@ -17,12 +17,12 @@ import { Select } from "../../../components/Select";
 interface SellUnitProps {
   open: boolean;
   onClose: () => void;
-  unit: Unit;
+  units: Unit[];
   afterSubmit?: () => void;
 }
 
 export function SellUnit(props: SellUnitProps) {
-  const { onClose, open, unit, afterSubmit } = props;
+  const { onClose, open, units, afterSubmit } = props;
   const [clients, setClients] = React.useState([]);
   const { register, handleSubmit, control, setValue } = useForm();
   const toast = useToast();
@@ -38,15 +38,19 @@ export function SellUnit(props: SellUnitProps) {
 
   React.useEffect(() => {
     searchClients();
-  }, [unit]);
+  }, [units]);
 
   const onSubmit = async (data) => {
     try {
-      await api.post(`/units/${unit.id}/sell`, {
-        sale_price: Number(data.sale_price),
-        sale_date: data.sale_date,
-        client: Number(data.client),
-      });
+      await api.post(
+        `/units/sell`,
+        units.map((unit) => ({
+          sale_price: Number(data.sale_price),
+          sale_date: data.sale_date,
+          client: Number(data.client),
+          unit_id: unit.id,
+        }))
+      );
 
       toast({ status: "success", title: "Venda realizada com sucesso" });
 
@@ -75,7 +79,9 @@ export function SellUnit(props: SellUnitProps) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <VStack spacing={2} align="start">
             <Text fontSize="lg" mb={2}>
-              {unit.name}
+              {`${units[0].name}${
+                units.length > 1 ? ` (${units.length} un.)` : ""
+              }`}
             </Text>
             <FormControl>
               <FormLabel htmlFor="client-field">Cliente</FormLabel>

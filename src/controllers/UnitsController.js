@@ -47,6 +47,7 @@ class UnitsController {
           id: unit.id,
           client_name: unit.client?.name,
           name: unit.product.name,
+          product_id: unit.product.id,
           sold: unit.sold,
           purchase_price: formatMoney(unit.purchase_price),
           sale_price: unit.sold ? formatMoney(unit.sale_price) : null,
