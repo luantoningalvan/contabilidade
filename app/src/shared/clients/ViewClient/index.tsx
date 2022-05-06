@@ -102,7 +102,7 @@ export function ViewClient(props: ViewClientProps) {
       <Modal
         open={open}
         loading={loading}
-        size="2xl"
+        size="3xl"
         onClose={onClose}
         title={clientData?.name}
       >
@@ -178,24 +178,32 @@ export function ViewClient(props: ViewClientProps) {
                 <BiWallet size={40} />
               </Box>
             </Box>
-            <Stack spacing={3} my={6}>
-              {clientData?.transactions.length === 0 ? (
-                <Box textAlign="center" py={4}>
-                  <Text color="gray.500" fontSize="lg">
-                    Nenhum registro
-                  </Text>
-                </Box>
-              ) : (
-                clientData?.transactions?.map((transaction) => (
-                  <TransactionCard
-                    type={transaction.type === 1 ? "income" : "expense"}
-                    value={transaction.value}
-                    description={transaction.description}
-                    date={transaction.created_at}
-                  />
-                ))
-              )}
-            </Stack>
+            <Box
+              overflow="auto"
+              maxH="60vh"
+              paddingRight="16px"
+              marginRight="-16px"
+              my={4}
+            >
+              <Stack spacing={3}>
+                {clientData?.transactions.length === 0 ? (
+                  <Box textAlign="center" py={4}>
+                    <Text color="gray.500" fontSize="lg">
+                      Nenhum registro
+                    </Text>
+                  </Box>
+                ) : (
+                  clientData?.transactions?.map((transaction) => (
+                    <TransactionCard
+                      type={transaction.type === 1 ? "income" : "expense"}
+                      value={transaction.value}
+                      description={transaction.description}
+                      date={transaction.created_at}
+                    />
+                  ))
+                )}
+              </Stack>
+            </Box>
           </GridItem>
         </Grid>
       </Modal>
