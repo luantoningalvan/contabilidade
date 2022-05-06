@@ -5,8 +5,9 @@ import { api } from "../../../services/api";
 import io, { Socket } from "socket.io-client";
 import { NewProduct } from "../../products/NewProduct";
 import { AssociateProduct } from "./associateProduct";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Select } from "../../../components/Select";
+import { MonthSelector } from "../../../components/MothSelector";
 
 interface NewUnitProps {
   open: boolean;
@@ -171,11 +172,15 @@ export function NewUnit(props: NewUnitProps) {
                     valueAsNumber: true,
                   })}
                 />
-                <Input
-                  type="date"
-                  placeholder="Data vencimento"
-                  flex={2}
-                  {...register(`products.${index}.expiration_date`)}
+                <Controller
+                  name={`products.${index}.expiration_date`}
+                  control={control}
+                  render={({ field }) => (
+                    <MonthSelector
+                      onChange={field.onChange}
+                      value={field.value}
+                    />
+                  )}
                 />
               </Stack>
             ))}
