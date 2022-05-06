@@ -15,6 +15,7 @@ import { TopBar } from "./TopBar";
 import { Totalizers } from "./Totalizers";
 import { UnitsTable } from "./UnitsTable";
 import { FloatButton } from "./FloatButton";
+import { HiOutlineClipboardList } from "react-icons/hi";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
@@ -96,11 +97,19 @@ export function Home() {
                 onToggleTotalizers={() => setTotalizers(!totalizers)}
               />
 
-              <UnitsTable
-                fetchUnits={fetchUnits}
-                setFilters={setFilters}
-                units={units}
-              />
+              {units.data.length > 0 ? (
+                <UnitsTable
+                  fetchUnits={fetchUnits}
+                  setFilters={setFilters}
+                  units={units}
+                />
+              ) : (
+                <EmptyState
+                  title="Nenhuma unidade inserida"
+                  description="Para inserir uma nova unidade clique no botão localizado no canto inferior direito."
+                  icon={HiOutlineClipboardList}
+                />
+              )}
             </Box>
           </>
         ) : (
