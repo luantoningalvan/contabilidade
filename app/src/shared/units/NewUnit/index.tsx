@@ -55,7 +55,7 @@ export function NewUnit(props: NewUnitProps) {
       return setValue(`products.${0}`, {
         quantity: 1,
         expiration_date: undefined,
-        price: data.product.original_price,
+        price: undefined,
         product: data.product.id,
       });
     }
@@ -69,7 +69,7 @@ export function NewUnit(props: NewUnitProps) {
       append({
         quantity: 1,
         expiration_date: undefined,
-        price: data.product.original_price,
+        price: undefined,
         product: data.product.id,
       });
     }
@@ -161,7 +161,9 @@ export function NewUnit(props: NewUnitProps) {
                   flex={1}
                   {...register(`products.${index}.quantity`, {
                     valueAsNumber: true,
+                    required: true,
                   })}
+                  required
                 />
                 <Input
                   fullWidth
@@ -169,6 +171,7 @@ export function NewUnit(props: NewUnitProps) {
                   flex={1}
                   {...register(`products.${index}.price`, {
                     valueAsNumber: true,
+                    required: true,
                   })}
                 />
                 <Input
