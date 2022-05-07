@@ -12,6 +12,7 @@ import { api } from "../../../services/api";
 import { debounce } from "../../../utils/debounce";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import { Buffer } from "buffer";
+import { fileToBase64 } from "../../../utils/fileToBase64";
 
 interface NewProductDialogProps {
   open: boolean;
@@ -27,7 +28,19 @@ export function NewProduct(props: NewProductDialogProps) {
 
   const onSubmit = async (data: any) => {
     try {
-      const result = await api.post("products", data);
+      const thumbnail = !!data.thumbnail
+        ? await fileToBase64(data.thumbnail).then(
+            (base64: string) => base64.split("data:image/jpg;base64,")[1]
+          )
+        : undefined;
+
+      let requestData = {
+        name: data.name,
+        natCode: data.natCode,
+        thumbnail,
+      };
+
+      const result = await api.post("products", requestData);
 
       !!afterSubmit && afterSubmit(result.data);
 

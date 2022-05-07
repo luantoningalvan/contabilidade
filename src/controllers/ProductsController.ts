@@ -61,13 +61,32 @@ class ProductsController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const findDuplicate = await prisma.product.findFirst({
-        where: { natCode: req.body.natCode },
+      if (!!req.body.natCode) {
+        const findDuplicate = await prisma.product.findFirst({
+          where: { natCode: req.body.natCode },
+        });
+
+        if (findDuplicate) throw new Error("Código já cadastrado");
+      }
+
+      let thumbnail = null;
+
+      if (!!req.body.thumbnail) {
+        const fileContents = Buffer.from(req.body.thumbnail, "base64");
+        const fileName = `${Date.now()}.jpg`;
+        const filePath = path.join(__dirname, "..", "..", "uploads", fileName);
+        fs.writeFileSync(filePath, fileContents);
+        thumbnail = fileName;
+      }
+
+      const createProduct = await prisma.product.create({
+        data: {
+          name: req.body.name,
+          natCode: req.body.natCode,
+          barCode: req.body.barCode,
+          thumbnail,
+        },
       });
-
-      if (findDuplicate) throw new Error("Código já cadastrado");
-
-      const createProduct = await prisma.product.create({ data: req.body });
 
       res.json(createProduct);
     } catch (error) {
