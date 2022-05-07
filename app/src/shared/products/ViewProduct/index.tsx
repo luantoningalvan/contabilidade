@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Modal } from "../../../components/Modal";
 import {
-  Avatar,
   Box,
   Button,
   Grid,
@@ -9,12 +8,7 @@ import {
   Heading,
   Image,
   Stack,
-  Tab,
   Table,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Tbody,
   Td,
   Th,
@@ -24,11 +18,11 @@ import {
 } from "@chakra-ui/react";
 import { api } from "../../../services/api";
 import { FiBox, FiCheckSquare, FiEdit } from "react-icons/fi";
-import { BsQuestionDiamond } from "react-icons/bs";
 import { formatToBrl } from "../../../utils/formatToBrl";
 import { EmptyState } from "../../../components/EmptyState";
 import { useConfirmation } from "../../../hooks/useConfirmation";
 import { EditProduct } from "../EditProduct";
+import defaultImagePlaceholder from "../../../assets/product-placeholder.png";
 
 interface ViewProdutoProps {
   open: boolean;
@@ -82,21 +76,11 @@ export function ViewProduct(props: ViewProdutoProps) {
         <Grid gridTemplateColumns="2fr 4fr" gap={12} mb={4}>
           <GridItem>
             <Stack spacing={4} alignItems="center">
-              {productData?.thumb ? (
-                <Image w="full" h="full" src={productData?.thumb} />
-              ) : (
-                <Box
-                  w="full"
-                  h="200px"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  borderWidth={1}
-                  rounded={2}
-                >
-                  <BsQuestionDiamond size={64} />
-                </Box>
-              )}
+              <Image
+                w="full"
+                h="full"
+                src={productData?.thumb || defaultImagePlaceholder}
+              />
 
               <Box>
                 <Button

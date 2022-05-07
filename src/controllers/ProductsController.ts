@@ -25,8 +25,9 @@ class ProductsController {
           name: p.name,
           natCode: p.natCode,
           barCode: p.barCode,
-          original_price: p.original_price,
-          thumb: `http://localhost:3333/public/thumb-${p.natCode}.jpg`,
+          thumb: p.thumbnail
+            ? `http://localhost:3333/public/${p.thumbnail}`
+            : null,
           totalUnits: p?._count?.units || 0,
         }))
       );
@@ -52,7 +53,9 @@ class ProductsController {
             timeZone: "UTC",
           }).format(unit.expiration_date!),
         })),
-        thumb: `http://localhost:3333/public/thumb-${findProduct.natCode}.jpg`,
+        thumb: findProduct.thumbnail
+          ? `http://localhost:3333/public/${findProduct.thumbnail}`
+          : null,
       });
     } catch (error) {
       next(error);
