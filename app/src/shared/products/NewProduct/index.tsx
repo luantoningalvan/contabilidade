@@ -1,9 +1,17 @@
 import * as React from "react";
 import { Modal } from "../../../components/Modal";
-import { useForm } from "react-hook-form";
-import { Box, Input, Stack, useToast } from "@chakra-ui/react";
+import { Controller, useForm } from "react-hook-form";
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Stack,
+  useToast,
+} from "@chakra-ui/react";
 import { api } from "../../../services/api";
 import { debounce } from "../../../utils/debounce";
+import { ImageUploadField } from "../../../components/ImageUploadField";
+import { Buffer } from "buffer";
 
 interface NewProductDialogProps {
   open: boolean;
@@ -13,8 +21,8 @@ interface NewProductDialogProps {
 
 export function NewProduct(props: NewProductDialogProps) {
   const { onClose, open, afterSubmit } = props;
-  const { register, watch, handleSubmit, setValue, formState } = useForm();
-  const [thumb, setThumb] = React.useState<null | string>(null);
+  const { register, watch, handleSubmit, setValue, formState, control } =
+    useForm();
   const toast = useToast();
 
   const onSubmit = async (data: any) => {
@@ -32,10 +40,15 @@ export function NewProduct(props: NewProductDialogProps) {
   };
 
   const findProduct = debounce(async (natCode: string) => {
+    if (natCode.length < 3) return;
     const findInfo = await api.get(`products/info/${natCode}`);
 
-    if (findInfo.data.imageUrl) {
-      setThumb(findInfo.data.imageUrl);
+    if (findInfo.data.thumbnail) {
+      const base64ToBuffer = Buffer.from(findInfo.data.thumbnail, "base64");
+      const file = new File([base64ToBuffer], `${natCode}.jpg`, {
+        type: "image/jpg",
+      });
+      setValue("thumbnail", file);
     }
     if (findInfo.data.title) {
       setValue("name", findInfo.data.title);
@@ -53,7 +66,7 @@ export function NewProduct(props: NewProductDialogProps) {
   return (
     <Modal
       open={open}
-      size="lg"
+      size="xl"
       onClose={onClose}
       title="Incluir produto"
       footer={{
@@ -65,25 +78,34 @@ export function NewProduct(props: NewProductDialogProps) {
       }}
     >
       <Stack direction="row" spacing={4}>
-        <Box w={180} rounded={4} borderStyle="dotted" borderWidth={4}>
-          {thumb && <img src={thumb} alt="Imagem do produto" />}
-        </Box>
-        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+        <Controller
+          name="thumbnail"
+          control={control}
+          render={({ field }) => (
+            <ImageUploadField onChange={field.onChange} value={field.value} />
+          )}
+        />
+        <form onSubmit={handleSubmit(onSubmit)} style={{ flex: 1 }}>
           <Stack>
-            <Input
-              placeholder="Código natura"
-              isInvalid={formState.errors.natCode}
-              {...register("natCode", { required: true })}
-            />
-            <Input
-              placeholder="Nome do produto"
-              isInvalid={formState.errors.name}
-              {...register("name", { required: true })}
-            />
-            <Input
-              placeholder="Preço base"
-              {...register("original_price", { valueAsNumber: true })}
-            />
+            <FormControl>
+              <FormLabel htmlFor="natCode-field">Código do produto</FormLabel>
+
+              <Input
+                id="natCode-field"
+                isInvalid={formState.errors.natCode}
+                {...register("natCode")}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel htmlFor="name-field">Nome do produto</FormLabel>
+
+              <Input
+                id="name-field"
+                isInvalid={formState.errors.name}
+                {...register("name", { required: true })}
+              />
+            </FormControl>
           </Stack>
         </form>
       </Stack>

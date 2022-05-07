@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import downloadFile from "../utils/downloadFile";
-import axios from "axios";
 import { PrismaClient } from "@prisma/client";
+import axios from "axios";
+import fs from "fs";
+import path from "path";
 
 const prisma = new PrismaClient();
 
@@ -113,9 +114,11 @@ class ProductsController {
     try {
       const code = req.params.code;
 
+      if (!code) throw new Error("Código não informado");
+
       try {
         let title;
-        let imageUrl;
+        let thumbnail;
 
         try {
           const fetchPage = await axios.get(
@@ -125,17 +128,20 @@ class ProductsController {
         } catch (error) {}
 
         try {
-          await downloadFile(
+          const downloadImage = await axios.get(
             `https://images.rede.natura.net/image/sku/145x145/${code}_1.jpg`,
-            `thumb-${code}.jpg`
+            { responseType: "arraybuffer" }
+          );
+          const returnedB64 = Buffer.from(downloadImage.data).toString(
+            "base64"
           );
 
-          imageUrl = `http://localhost:3333/public/thumb-${code}.jpg`;
+          thumbnail = returnedB64;
         } catch (error) {}
 
         res.send({
           title,
-          imageUrl,
+          thumbnail,
         });
       } catch (error) {
         next(error);
