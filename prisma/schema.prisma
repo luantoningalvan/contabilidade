@@ -10,12 +10,12 @@ generator client {
 }
 
 model Product {
-    id             Int     @id @default(autoincrement())
-    name           String?
-    barCode        String?
-    natCode        String?
-    original_price Float?
-    units          Unit[]
+    id        Int     @id @default(autoincrement())
+    name      String?
+    barCode   String?
+    natCode   String?
+    thumbnail String?
+    units     Unit[]
 }
 
 model Category {
