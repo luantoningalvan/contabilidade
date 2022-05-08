@@ -40,8 +40,6 @@ export const MonthSelector = ({ value, onChange }) => {
   const [month, setMonth] = React.useState<Date>(value);
   const [text, setText] = React.useState<string>();
 
-  console.log(value);
-
   const handleNextYear = React.useCallback(() => {
     setYear((curr) => curr + 1);
   }, []);
@@ -70,8 +68,9 @@ export const MonthSelector = ({ value, onChange }) => {
   const handleCheckDateValidity = React.useCallback((e) => {
     const isValid = /(0[1-9]|1[0-2])\/([12]\d{3})/.test(e.target.value);
     if (isValid) {
-      const [month, year] = e.target.value.split("/");
-      setMonth(new Date(year, month));
+      const [monthValue, yearValue] = e.target.value.split("/");
+      setYear(Number(yearValue));
+      setMonth(new Date(Number(yearValue), Number(monthValue) - 1));
     } else {
       setText("");
     }
