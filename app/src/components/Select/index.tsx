@@ -30,22 +30,23 @@ export const Select = (props: SelectProps) => {
       <Controller
         name={name}
         control={control}
-        render={({ field: { value, onChange, onBlur } }) => {
-          return (
-            <ChakraSelect
-              options={options}
-              placeholder={placeholder}
-              onChange={(newValue) => onChange(newValue.value)}
-              onBlur={onBlur}
-              value={options.find((option) => value === option.value)}
-              defaultValue={options.find((option) => value === option.value)}
-              chakraStyles={{
-                dropdownIndicator: (bs) => ({ ...bs, w: 8 }),
-              }}
-              onCreateOption={onCreate}
-            />
-          );
-        }}
+        rules={{ required: "Preencha este campo" }}
+        render={({ field: { onChange, onBlur, value, name, ref } }) => (
+          <ChakraSelect
+            options={options}
+            placeholder={placeholder}
+            onChange={(newValue) => onChange(newValue.value)}
+            onBlur={onBlur}
+            value={options.find((option) => value === option.value)}
+            name={name}
+            ref={ref}
+            defaultValue={options.find((option) => value === option.value)}
+            chakraStyles={{
+              dropdownIndicator: (bs) => ({ ...bs, w: 8 }),
+            }}
+            onCreateOption={onCreate}
+          />
+        )}
       />
     </chakra.div>
   );
