@@ -13,7 +13,7 @@ import {
   SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
-import { isSameMonth, format } from "date-fns";
+import { isSameMonth, format, lastDayOfMonth } from "date-fns";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
 const months = {
@@ -50,30 +50,35 @@ export const MonthSelector = ({ value, onChange }) => {
 
   const handleSelectMonth = React.useCallback(
     (month: number) => {
-      const newMonth = new Date(year, month - 1);
+      const newMonth = lastDayOfMonth(new Date(year, month - 1));
       setMonth(newMonth);
       setText(format(newMonth, "MM/yyyy"));
+      onChange(newMonth);
       onClose();
     },
-    [year, onClose]
+    [year, onClose, onChange]
+  );
+
+  const handleCheckDateValidity = React.useCallback(
+    (e) => {
+      const isValid = /(0[1-9]|1[0-2])\/([12]\d{3})/.test(e.target.value);
+      if (isValid) {
+        const [monthValue, yearValue] = e.target.value.split("/");
+        setYear(Number(yearValue));
+        const newMonth = lastDayOfMonth(
+          new Date(Number(yearValue), Number(monthValue) - 1)
+        );
+        setMonth(newMonth);
+        onChange(newMonth);
+      } else {
+        setText("");
+      }
+    },
+    [onChange]
   );
 
   const handleChange = React.useCallback((e) => {
-    const value = e.target.value;
-
     setText(e.target.value);
-    onChange(value);
-  }, []);
-
-  const handleCheckDateValidity = React.useCallback((e) => {
-    const isValid = /(0[1-9]|1[0-2])\/([12]\d{3})/.test(e.target.value);
-    if (isValid) {
-      const [monthValue, yearValue] = e.target.value.split("/");
-      setYear(Number(yearValue));
-      setMonth(new Date(Number(yearValue), Number(monthValue) - 1));
-    } else {
-      setText("");
-    }
   }, []);
 
   return (
