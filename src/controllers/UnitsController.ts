@@ -60,6 +60,8 @@ class UnitsController {
           }).format(unit.sale_date!),
           expiration_date: new Intl.DateTimeFormat("pt-BR", {
             timeZone: "UTC",
+            month: "2-digit",
+            year: "2-digit",
           }).format(unit.expiration_date!),
           profit: unit.sold
             ? formatMoney(unit.sale_price! - unit.purchase_price)

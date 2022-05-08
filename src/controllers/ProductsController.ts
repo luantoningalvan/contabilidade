@@ -51,6 +51,8 @@ class ProductsController {
           ...unit,
           expiration_date: new Intl.DateTimeFormat("pt-BR", {
             timeZone: "UTC",
+            month: "2-digit",
+            year: "2-digit",
           }).format(unit.expiration_date!),
         })),
         thumb: findProduct.thumbnail
