@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import downloadFile from "../utils/downloadFile";
-import axios from "axios";
 import { PrismaClient } from "@prisma/client";
+import axios from "axios";
+import fs from "fs";
+import path from "path";
 
 const prisma = new PrismaClient();
 
@@ -24,8 +25,9 @@ class ProductsController {
           name: p.name,
           natCode: p.natCode,
           barCode: p.barCode,
-          original_price: p.original_price,
-          thumb: `http://localhost:3333/public/thumb-${p.natCode}.jpg`,
+          thumb: p.thumbnail
+            ? `http://localhost:3333/public/${p.thumbnail}`
+            : null,
           totalUnits: p?._count?.units || 0,
         }))
       );
@@ -51,7 +53,9 @@ class ProductsController {
             timeZone: "UTC",
           }).format(unit.expiration_date!),
         })),
-        thumb: `http://localhost:3333/public/thumb-${findProduct.natCode}.jpg`,
+        thumb: findProduct.thumbnail
+          ? `http://localhost:3333/public/${findProduct.thumbnail}`
+          : null,
       });
     } catch (error) {
       next(error);
@@ -60,13 +64,32 @@ class ProductsController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const findDuplicate = await prisma.product.findFirst({
-        where: { natCode: req.body.natCode },
+      if (!!req.body.natCode) {
+        const findDuplicate = await prisma.product.findFirst({
+          where: { natCode: req.body.natCode },
+        });
+
+        if (findDuplicate) throw new Error("Código já cadastrado");
+      }
+
+      let thumbnail = null;
+
+      if (!!req.body.thumbnail) {
+        const fileContents = Buffer.from(req.body.thumbnail, "base64");
+        const fileName = `${Date.now()}.jpg`;
+        const filePath = path.join(__dirname, "..", "..", "uploads", fileName);
+        fs.writeFileSync(filePath, fileContents);
+        thumbnail = fileName;
+      }
+
+      const createProduct = await prisma.product.create({
+        data: {
+          name: req.body.name,
+          natCode: req.body.natCode,
+          barCode: req.body.barCode,
+          thumbnail,
+        },
       });
-
-      if (findDuplicate) throw new Error("Código já cadastrado");
-
-      const createProduct = await prisma.product.create({ data: req.body });
 
       res.json(createProduct);
     } catch (error) {
@@ -113,9 +136,11 @@ class ProductsController {
     try {
       const code = req.params.code;
 
+      if (!code) throw new Error("Código não informado");
+
       try {
         let title;
-        let imageUrl;
+        let thumbnail;
 
         try {
           const fetchPage = await axios.get(
@@ -125,17 +150,20 @@ class ProductsController {
         } catch (error) {}
 
         try {
-          await downloadFile(
+          const downloadImage = await axios.get(
             `https://images.rede.natura.net/image/sku/145x145/${code}_1.jpg`,
-            `thumb-${code}.jpg`
+            { responseType: "arraybuffer" }
+          );
+          const returnedB64 = Buffer.from(downloadImage.data).toString(
+            "base64"
           );
 
-          imageUrl = `http://localhost:3333/public/thumb-${code}.jpg`;
+          thumbnail = returnedB64;
         } catch (error) {}
 
         res.send({
           title,
-          imageUrl,
+          thumbnail,
         });
       } catch (error) {
         next(error);

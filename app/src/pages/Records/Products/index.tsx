@@ -18,6 +18,7 @@ import { EmptyState } from "../../../components/EmptyState";
 import { BiBasket } from "react-icons/bi";
 import { debounce } from "../../../utils/debounce";
 import { parseOptions } from "../../../utils/parseOptions";
+import defaultImagePlaceholder from "../../../assets/product-placeholder.png";
 
 type Product = {
   id: number;
@@ -109,7 +110,7 @@ export function Products() {
                 <Image
                   roundedBottomLeft={4}
                   roundedTopLeft={6}
-                  src={product.thumb}
+                  src={product.thumb || defaultImagePlaceholder}
                   alt={product.name}
                   h="145px"
                 />

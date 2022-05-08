@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Input, Stack } from "@chakra-ui/react";
+import { Input, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { Modal } from "../../../components/Modal";
 import { api } from "../../../services/api";
 import io, { Socket } from "socket.io-client";
@@ -56,7 +56,7 @@ export function NewUnit(props: NewUnitProps) {
       return setValue(`products.${0}`, {
         quantity: 1,
         expiration_date: undefined,
-        price: data.product.original_price,
+        price: undefined,
         product: data.product.id,
       });
     }
@@ -70,7 +70,7 @@ export function NewUnit(props: NewUnitProps) {
       append({
         quantity: 1,
         expiration_date: undefined,
-        price: data.product.original_price,
+        price: undefined,
         product: data.product.id,
       });
     }
@@ -142,49 +142,75 @@ export function NewUnit(props: NewUnitProps) {
         }}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack>
-            {fields.map((field, index) => (
-              <Stack key={field.id} direction="row" spacing={2}>
-                <Select
-                  options={products}
-                  placeholder="Selecione o produto"
-                  control={control}
-                  name={`products.${index}.product`}
-                  flex={4}
-                  onCreate={(text) =>
-                    setCreateProduct(`products.${index}.product`)
-                  }
-                />
-
-                <Input
-                  type="number"
-                  placeholder="Qnt."
-                  flex={1}
-                  {...register(`products.${index}.quantity`, {
-                    valueAsNumber: true,
-                  })}
-                />
-                <Input
-                  fullWidth
-                  placeholder="Valor"
-                  flex={1}
-                  {...register(`products.${index}.price`, {
-                    valueAsNumber: true,
-                  })}
-                />
-                <Controller
-                  name={`products.${index}.expiration_date`}
-                  control={control}
-                  render={({ field }) => (
-                    <MonthSelector
-                      onChange={field.onChange}
-                      value={field.value}
+          <Table>
+            <Thead>
+              <Th ps={2} pe={2}>
+                Produto
+              </Th>
+              <Th ps={2} pe={2}>
+                Qnt.
+              </Th>
+              <Th ps={2} pe={2}>
+                Valor
+              </Th>
+              <Th ps={2} pe={2}>
+                Vencimento
+              </Th>
+            </Thead>
+            <Tbody>
+              {fields.map((field, index) => (
+                <Tr key={field.id}>
+                  <Td ps={2} pe={2}>
+                    <Select
+                      options={products}
+                      placeholder="Selecione o produto"
+                      control={control}
+                      name={`products.${index}.product`}
+                      onCreate={(text) =>
+                        setCreateProduct(`products.${index}.product`)
+                      }
                     />
-                  )}
-                />
-              </Stack>
-            ))}
-          </Stack>
+                  </Td>
+                  <Td width="90px" ps={2} pe={2}>
+                    <Input
+                      type="number"
+                      placeholder="Qnt."
+                      {...register(`products.${index}.quantity`, {
+                        valueAsNumber: true,
+                        required: true,
+                      })}
+                      required
+                    />
+                  </Td>
+                  <Td width="140px" ps={2} pe={2}>
+                    <Input
+                      fullWidth
+                      placeholder="Valor"
+                      type="number"
+                      min="0"
+                      step="any"
+                      {...register(`products.${index}.price`, {
+                        valueAsNumber: true,
+                        required: true,
+                      })}
+                    />
+                  </Td>
+                  <Td width="160px" ps={2} pe={2}>
+                    <Controller
+                      name={`products.${index}.expiration_date`}
+                      control={control}
+                      render={({ field }) => (
+                        <MonthSelector
+                          onChange={field.onChange}
+                          value={field.value}
+                        />
+                      )}
+                    />
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
         </form>
       </Modal>
 
