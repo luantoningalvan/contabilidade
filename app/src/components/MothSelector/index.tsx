@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Heading,
@@ -34,11 +34,17 @@ const months = {
 export const MonthSelector = ({ value, onChange }) => {
   const { onOpen, onClose, isOpen } = useDisclosure();
 
-  const [year, setYear] = React.useState(
-    value ? new Date(value).getFullYear() : new Date().getFullYear()
-  );
-  const [month, setMonth] = React.useState<Date>(value);
+  const [year, setYear] = React.useState(new Date().getFullYear());
+  const [month, setMonth] = React.useState<Date>();
   const [text, setText] = React.useState<string>();
+
+  useEffect(() => {
+    if (value) {
+      setMonth(value);
+      setText(format(value, "MM/yyyy"));
+      setYear(new Date(value).getFullYear());
+    }
+  }, [value]);
 
   const handleNextYear = React.useCallback(() => {
     setYear((curr) => curr + 1);

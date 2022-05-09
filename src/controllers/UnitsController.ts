@@ -143,6 +143,11 @@ class UnitsController {
         data: {
           purchase_price: data.price,
           expiration_date: new Date(data.expiration_date),
+          ...(data.sale_price &&
+            data.sale_date && {
+              sale_price: data.sale_price,
+              sale_date: new Date(data.sale_date),
+            }),
         },
       });
 
