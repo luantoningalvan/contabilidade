@@ -147,7 +147,7 @@ export function ViewClient(props: ViewClientProps) {
                 onClick={() => setNewPayment(true)}
                 leftIcon={<FiPlus />}
               >
-                Pagamento
+                Lançamento
               </Button>
             </Box>
             <Box
