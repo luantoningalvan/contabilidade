@@ -18,54 +18,72 @@ interface NewProductDialogProps {
   open: boolean;
   onClose: () => void;
   afterSubmit?: (data: any) => void;
+  initialValues?: any;
 }
 
 export function NewProduct(props: NewProductDialogProps) {
-  const { onClose, open, afterSubmit } = props;
+  const { onClose, open, afterSubmit, initialValues } = props;
+  const [loading, setLoading] = React.useState(false);
   const { register, watch, handleSubmit, setValue, formState, control } =
-    useForm();
+    useForm({ defaultValues: props.initialValues });
   const toast = useToast();
 
-  const onSubmit = async (data: any) => {
-    try {
-      const thumbnail = !!data.thumbnail
-        ? await fileToBase64(data.thumbnail).then(
-            (base64: string) => base64.split("data:image/jpg;base64,")[1]
-          )
-        : undefined;
+  const onSubmit = React.useCallback(
+    async (data: any) => {
+      if (loading) return;
+      try {
+        const thumbnail = !!data.thumbnail
+          ? await fileToBase64(data.thumbnail).then(
+              (base64: string) => base64.split("data:image/jpg;base64,")[1]
+            )
+          : undefined;
 
-      let requestData = {
-        name: data.name,
-        natCode: data.natCode,
-        thumbnail,
-      };
+        let requestData = {
+          name: data.name,
+          natCode: data.natCode,
+          thumbnail,
+        };
 
-      const result = await api.post("products", requestData);
+        const result = await api.post("products", requestData);
 
-      !!afterSubmit && afterSubmit(result.data);
+        !!afterSubmit && afterSubmit(result.data);
 
-      toast({ status: "success", title: "Produto inserido com sucesso" });
+        toast({ status: "success", title: "Produto inserido com sucesso" });
 
-      onClose();
-    } catch (error) {
-      toast({ status: "error", title: error.response.data.message });
-    }
-  };
+        onClose();
+      } catch (error) {
+        toast({ status: "error", title: error.response.data.message });
+      }
+    },
+    [onClose, afterSubmit, toast, loading]
+  );
 
   const findProduct = debounce(async (natCode: string) => {
     if (natCode.length < 3) return;
-    const findInfo = await api.get(`products/info/${natCode}`);
 
-    if (findInfo.data.thumbnail) {
-      const base64ToBuffer = Buffer.from(findInfo.data.thumbnail, "base64");
-      const file = new File([base64ToBuffer], `${natCode}.jpg`, {
-        type: "image/jpg",
-      });
-      setValue("thumbnail", file);
-    }
-    if (findInfo.data.title) {
-      setValue("name", findInfo.data.title);
-    }
+    setLoading(true);
+
+    try {
+      const findInfo = await api.get(`products/info/${natCode}`);
+
+      if (findInfo.data.thumbnail) {
+        const base64ToBuffer = Buffer.from(findInfo.data.thumbnail, "base64");
+        const file = new File([base64ToBuffer], `${natCode}.jpg`, {
+          type: "image/jpg",
+        });
+        setValue("thumbnail", file);
+      } else {
+        setValue("thumbnail", null);
+      }
+
+      if (!!findInfo.data.title) {
+        setValue("name", findInfo.data.title);
+      } else {
+        setValue("name", undefined);
+      }
+    } catch (error) {}
+
+    setLoading(false);
   }, 500);
 
   React.useEffect(() => {
@@ -75,6 +93,12 @@ export function NewProduct(props: NewProductDialogProps) {
 
     return () => subscription.unsubscribe();
   }, [watch]);
+
+  React.useEffect(() => {
+    if (!!initialValues?.natCode) {
+      findProduct(initialValues.natCode);
+    }
+  }, [initialValues]);
 
   return (
     <Modal
@@ -95,7 +119,11 @@ export function NewProduct(props: NewProductDialogProps) {
           name="thumbnail"
           control={control}
           render={({ field }) => (
-            <ImageUploadField onChange={field.onChange} value={field.value} />
+            <ImageUploadField
+              loading={loading}
+              onChange={field.onChange}
+              value={field.value}
+            />
           )}
         />
         <form onSubmit={handleSubmit(onSubmit)} style={{ flex: 1 }}>
@@ -116,7 +144,7 @@ export function NewProduct(props: NewProductDialogProps) {
               <Input
                 id="name-field"
                 isInvalid={formState.errors.name}
-                {...register("name", { required: true })}
+                {...register("name", { required: true, disabled: loading })}
               />
             </FormControl>
           </Stack>

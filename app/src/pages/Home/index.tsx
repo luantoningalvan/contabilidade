@@ -16,9 +16,11 @@ import { Totalizers } from "./Totalizers";
 import { UnitsTable } from "./UnitsTable";
 import { FloatButton } from "./FloatButton";
 import { HiOutlineClipboardList } from "react-icons/hi";
+import { ImportUnits } from "../../shared/units/ImportUnits";
 
 export function Home() {
   const [newUnit, setNewUnit] = React.useState(false);
+  const [importUnits, setImportUnits] = React.useState(false);
   const [units, setUnits] = React.useState<{
     data: Unit[];
     totalizers: { purchases: number; sales: number; profit: number };
@@ -68,12 +70,21 @@ export function Home() {
         />
       )}
 
+      {importUnits && (
+        <ImportUnits
+          open={importUnits}
+          onClose={() => setImportUnits(false)}
+          afterSubmit={fetchUnits}
+        />
+      )}
+
       <Layout>
         {categories.length > 0 ? (
           <>
             <FloatButton
               bg={currentCategory?.color}
-              onClick={() => setNewUnit(true)}
+              onAdd={() => setNewUnit(true)}
+              onImport={() => setImportUnits(true)}
             />
 
             <Totalizers

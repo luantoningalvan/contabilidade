@@ -6,6 +6,7 @@ import unitsRoutes from "./units.routes";
 import clientsRoutes from "./clients.routes";
 import transactionsRoutes from "./transactions.routes";
 import dashboardRoutes from "./dashboard.routes";
+import importerRoutes from "./importer.routes";
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.use("/units", unitsRoutes);
 router.use("/clients", clientsRoutes);
 router.use("/transactions", transactionsRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/importer", importerRoutes);
 
 export default router;

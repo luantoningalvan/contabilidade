@@ -1,15 +1,24 @@
 import React, { useCallback, useEffect } from "react";
-import { Box, Image, Text } from "@chakra-ui/react";
+import { Box, CircularProgress, Image, Text } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import { FiUpload } from "react-icons/fi";
 
-export const ImageUploadField = ({ value, onChange }) => {
+interface ImageUploadFieldProps {
+  value: any;
+  onChange: any;
+  loading?: boolean;
+}
+
+export const ImageUploadField = (props: ImageUploadFieldProps) => {
+  const { value, onChange, loading } = props;
   const [preview, setPreview] = React.useState(null);
 
   useEffect(() => {
     if (!!value) {
       const imagePreview = URL.createObjectURL(value);
       setPreview(imagePreview);
+    } else {
+      setPreview(null);
     }
   }, [value]);
 
@@ -31,7 +40,17 @@ export const ImageUploadField = ({ value, onChange }) => {
     <Box w={180} h={180} rounded={4} overflow="hidden" {...getRootProps()}>
       <input {...(getInputProps() as any)} />
 
-      {preview ? (
+      {loading ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          h="full"
+          w="full"
+        >
+          <CircularProgress isIndeterminate />
+        </Box>
+      ) : preview ? (
         <Image
           src={preview}
           alt="Preview"

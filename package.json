@@ -28,7 +28,8 @@
     "jimp": "^0.16.1",
     "nodemon": "^2.0.12",
     "prisma": "^3.9.1",
-    "socket.io": "^4.4.1"
+    "socket.io": "^4.4.1",
+    "xlsx": "^0.18.5"
   },
   "build": {
     "linux": {
