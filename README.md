@@ -11,3 +11,5 @@ Ele contém as seguintes funções
 - Dashboard com estatísticas sobre o produto
 
 Fique a vontade para abrir issues sugerindo melhorias ou reportando erros, PRs são muito bem vindos!
+
+PS: Esta foi a primeira versão do que hoje é o Revendi
